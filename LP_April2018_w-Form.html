@@ -1,9 +1,243 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="icon" type="image/x-icon" href="https://www.proquest.com/favicon.ico" />
 <title>ProQuest</title>
+
+<link rel="icon" type="image/x-icon" href="https://www.proquest.com/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Montserrat" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Slabo+27px" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Indie+Flower" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Dancing+Script:400,700" />
+<link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/IMC-style.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap-override-20140226.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap-select.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/print-stylesheet.css" media="print" />
+<style type="text/css">
+.parsley-error {
+	border: 2px solid #a51f1e;
+}
+.parsley-error:focus {
+	border: 2px solid #a51f1e;
+}
+.parsley-error-list {
+  color: #a51f1e;
+}
+.parsley-required {
+	color: #a51f1e;
+}
+.parsley-type {
+	color: #a51f1e;
+}
+#contact {
+	color: #ffffff;
+}
+#email-warning {
+	display: none;
+}
+.pq-lead-text {
+	font-size: 16px;
+}
+.tooltip-inner {
+	max-width: 275px;
+	color: #a94442;
+	background-color: #f2dede;
+	border: 1px solid #ebccd1;
+}
+/* ID needed here for specificity */
+#contact .tooltip-arrow {
+	border-top-color: #ebccd1;
+}
+.main_footer {
+	float: left;
+	width: 100%;
+	padding: 0;
+}
+.main_footer a {
+	color: white;
+}
+.main_footer .links {
+	padding: 5px 15px;
+}
+.main_footer .links a {
+	font-size: 12px;
+	padding: 5px;
+}
+a:hover, a:focus {
+	text-decoration: none;
+}
+</style>
+
+<!--[if IE]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<script src="https://www.sc.pages04.net/lp/static/js/iMAWebCookie.js?2aa8b034-139209dc9f9-6b01afd6fbb6724a9fe9ac1747b0e3f6&h=www.pages04.net" type="text/javascript"></script>
+<script src="https://www.proquest.com/includes/IMC-jquery-1.10.2.min.js"></script>
+<script src="https://www.proquest.com/includes/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.7.2/parsley.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<!--<script src="https://www.proquest.com/includes/pq-clear-contact-form.js"></script>-->
+<script>
+$( document ).ready(function() {
+
+    var myVar = setInterval(function() { myTimer(); }, 10);
+    function myTimer() {
+        if (typeof ewt != 'undefined') {
+            clearInterval(myVar);
+            ewt.init(); 
+            console.log("EWT Initialized"); ////////////////
+        } else {
+            console.log("Not Initialized"); ////////////////
+        }
+    }
+
+    // set up Parsley
+    $('#contact').parsley({ excluded: ':hidden', errorMessage: '', requiredMessage: '' });
+
+    // Enable Bootstrap tooltip for email field
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // lock the email field
+    //  only if the hidden field with a recipient's ID is present
+    //  and there is content in the email field (in case something goes wrong)
+    if ( $('[name="RECIPIENT_ID_*"]').length && $('#email').val().length ) {
+
+      // show the "Clear the form" prompt
+      $('#clear-identity-prompt').show();
+
+      // show the email warning prompt
+      $('#email-warning').show();
+
+      // disable email field
+      $('#email').prop('disabled', 'disabled');
+
+      // do not require validation on disabled fields
+      $('#email').removeProp('required');
+
+    }
+
+    // enable email field before submitting form, otherwise value will not be sent
+    $('#contact').submit(function(e) {
+      $('#email').prop('disabled', false);
+    });
+
+    // set any element with the class "clear-identity-action" to call the clearing function when clicked
+    $('.clear-identity-action').click(function() {
+      clearIdentity();
+    });
+
+    // From pq-clear-contact-form.js - disallow changing the email address if already set
+//    initContactForm('contact', 'control_EMAIL'); // modify this to pass form, email IDs
+
+    // ======== Decide which form groups to display ========
+    $('.grpOne').find('select, input[type="text"]').each(function() {
+        if ($(this).find('option:selected').text() != "") {
+            // IS a select drop down
+            itemVal = $(this).find('option:selected').text();
+            if (itemVal === "Select one"){
+                g1Flag = false;
+console.log("Group 1 drop down is Empty: "+this.id);
+                return false;
+            } else {
+                g1Flag = true;
+console.log("Group 1 drop down is Populated: "+this.value);  
+            }
+        } else {
+            // IS a text field
+            itemVal = this.value;
+            if (itemVal === "") {
+                g1Flag = false;
+console.log("Group 1 text is Empty: "+this.id);
+                return false;
+            } else {
+                g1Flag = true;
+console.log("Group 1 text is Populated: "+this.value);  
+            }
+        }
+    });
+
+    $('.grpTwo').find('select, input[type="text"]').each(function() {
+        if ($(this).find('option:selected').text() != "") {
+            // IS a select drop down
+            itemVal = $(this).find('option:selected').text();
+            if (itemVal === "Select one"){
+                g2Flag = false;
+console.log("Group 2 drop down is Empty: "+this.id);
+                return false;
+            } else {
+                g2Flag = true;
+console.log("Group 2 drop down is Populated: "+this.value);  
+            }
+        } else {
+            // IS a text field
+            itemVal = this.value;
+            if (itemVal === "") {
+                g2Flag = false;
+console.log("Group 2 text is Empty: "+this.id);
+                return false;
+            } else {
+                g2Flag = true;
+console.log("Group 2 text is Populated: "+this.value);  
+            }
+        }
+    });
+
+    if(g1Flag === true) {                        // group 1 is complete
+        $(".grpOne").addClass("hide");
+    }
+    if(g1Flag === false || g2Flag === true) {    // group 2 is complete OR group 1 is not
+        $(".grpTwo").addClass("hide");
+    }
+
+console.log("g1: ", g1Flag, "  g2: ", g2Flag);
+
+    //Sets the date for the "Last Touch Lead Source Date"
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1;    // January is 0!
+    var yyyy = today.getFullYear();
+
+    if (dd < 10) { dd = '0'+dd };
+    if (mm < 10) { mm = '0'+mm };
+    today = mm+'/'+dd+'/'+yyyy;
+    $("#LastTouchLeadSourceDate").val(today);           // Sets hidden field for current date
+
+    console.log("End Doc Ready"); ////////////////
+
+}); // END Doc Ready
+
+/**
+ * Clear the contact form, and hidden recipient id field
+ *  This is called from any link or button in the page with the class "clear-identity-action"
+ */
+function clearIdentity() {
+
+    // remove the recipient id field
+    //  to make sure it does not get sent with the new record
+    $('[name="RECIPIENT_ID_*"]').remove();
+
+    // clear the form fields
+    $('#contact').clearForm();  // (from jquery.form.js)
+
+    // hide the email warning prompt
+    $('#email-warning').hide();
+
+    // hide the "Clear the form" prompt
+    $('#clear-identity-prompt').hide();
+
+    // enable email field
+    $('#email').prop('disabled', false);
+
+    // require an email address
+    $('#email').prop('required', 'required');
+
+    $('#email').focus();
+
+}
+</script>
 </head>
+
 <body>
 
 <!--*********************** Start Header ***********************-->
@@ -52,7 +286,7 @@
 <!--*********************** End Hero Image ***********************--> 
 
 <!--*********************** Start Summary Copy ***********************-->
-<div class="background-part">
+<div class="background_part">
   <div class="container">
     <div class="col-md-12">
       <div class="col-md-5" style="color: #FFF; margin-top: 15px;">
@@ -80,6 +314,7 @@
         <div class="left-contact-form">
           <div class="contact-forms">
             <h3 class="text-center">Echo CTA here, but avoid any "below" language.</h3>
+
             <form id="contact" name="contact" method="post" class="pq-contact" autocomplete="off">
               <!-- Autocomplete set to "off" for compatibility workaround for Firefox. -->
               
@@ -88,11 +323,6 @@
                 <p style="color:#333333; font-size: 13px;">To update your email address, please register again by submitting a <a href="#" class="clear-identity-action" style="color:#333333; text-decoration:underline; font-size: 13px;" name="NewForm" xt="SPNOTRACK">new form</a>.</p>
               </div>
               
-              <!-- The "Last Touch Lead Source" can be updated by changing the value="" -->
-              <input type="hidden" name="LastTouchLeadSource" id="LastTouchLeadSource" value="Targeted Email">
-              
-              <!-- The "Lead Status" can be updated by changing the value="" -->
-              <input type="hidden" name="Lead Status" value="Open-Marketing Visitor">
               <div class="form-group">
                 <label for="control_EMAIL">Email <span class="parsley-required">*</span></label>
                 <input type="text" name="Email" id="control_EMAIL" class="form-control" required="" data-toggle="tooltip" data-placement="top"
@@ -444,6 +674,7 @@
                 <label for="usr">State or Province</label>
                 <input type="text" name="State_Province" id="control_COLUMN44" label="State or Province" class="form-control" required="" value="">
               </div>
+
               <div class="row">
                 <div class="col-xs-12">
                   <p>Privacy regulations require that we get your consent to continue to collect, store and use the personal information submitted for account creation or collected while using our services.</p>
@@ -455,12 +686,20 @@
                   </div>
                 </div>
               </div>
+
               <div style="text-align: center;">
                 <p id="clear-identity-prompt" style="display: none;"><strong>Not you?</strong> Please <a href="#" style="color:#333333; text-decoration:underline" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
                 <input type="submit" class="btn btn-primary btn-lg" value="Submit">
-                <!--<input type="button" class="btn btn-primary btn-lg" onclick="formClear()" value="Clear Form">--> 
               </div>
+              
+              <!-- The "Lead Status" can be updated by changing the value="" -->
+              <input type="hidden" name="Lead Status" value="Open-Marketing Visitor">
+
+              <!-- The "Last Touch Lead Source" can be updated by changing the value="" -->
+              <input type="hidden" name="LastTouchLeadSource" id="LastTouchLeadSource" value="Targeted Email">
+
               <input type="hidden" name="LastTouchLeadSourceDate" id="LastTouchLeadSourceDate" value="mm/dd/yyyy">
+
             </form>
           </div>
         </div>
@@ -591,224 +830,55 @@
   </div>
   <!--*********************** End RESOURCES Area ***********************--> 
   
-  <!--*********************** Start Footer Area ***********************-->
-  <div class="footer_one">
+<!-- ======== START Footer ======== -->
+ 
+<div class="footer_one">
     <div class="container">
-      <div class="col-md-12">
-        <div class="col-md-2 col-xs-6">
-          <div class="single_ft quicklinks">
-            <h4>Navigation</h4>
-            <!--Navigation--> 
-            <a name="Footer_Navigation_Libraries" href="https://www.proquest.com/libraries" xt="SPCLICK" xtlinkname="Footer_Navigation_Libraries" xthyperlink="921342">For Libraries</a><br>
-            <a name="Footer_Navigation_Researchers" href="https://www.proquest.com/researchers" xt="SPCLICK" xtlinkname="Footer_Navigation_Researchers" xthyperlink="921343">For Researchers</a><br>
-            <a name="Footer_Navigation_ProductsServices" href="https://www.proquest.com/products-services" xt="SPCLICK" xtlinkname="Footer_Navigation_ProductsServices" xthyperlink="921344">Products &amp; Services</a><br>
-            <a name="Footer_Navigation_Customers" href="https://www.proquest.com/customer-care" xt="SPCLICK" xtlinkname="Footer_Navigation_Customers" xthyperlink="921345">For Customers</a><br>
-            <a name="Footer_Navigation_Events" href="https://www.proquest.com/events" xt="SPCLICK" xtlinkname="Footer_Navigation_Events" xthyperlink="921346">Events</a><br>
-            <a name="Footer_Navigation_About" href="https://www.proquest.com/about" xt="SPCLICK" xtlinkname="Footer_Navigation_About" xthyperlink="921347">About</a><br>
-            <a name="Footer_Navigation_Blogs" href="https://www.proquest.com/blog" xt="SPCLICK" xtlinkname="Footer_Navigation_Blogs" xthyperlink="921348">Blogs</a> </div>
+        <div class="col-md-12">
+            <div class="col-md-2 col-xs-6">
+                <div class="single_ft quicklinks">
+                    <h4>Navigation</h4><!--Navigation-->
+                    <a name="Footer_Navigation_Libraries" href="https://www.proquest.com/libraries">For Libraries</a><br>
+                    <a name="Footer_Navigation_Researchers" href="https://www.proquest.com/researchers">For Researchers</a><br>
+                    <a name="Footer_Navigation_ProductsServices" href="https://www.proquest.com/products-services">Products &amp; Services</a><br>
+                    <a name="Footer_Navigation_Customers" href="https://www.proquest.com/customer-care">For Customers</a><br>
+                    <a name="Footer_Navigation_Events" href="https://www.proquest.com/events">Events</a><br>
+                    <a name="Footer_Navigation_About" href="https://www.proquest.com/about">About</a><br>
+                    <a name="Footer_Navigation_Blogs" href="https://www.proquest.com/blog">Blogs</a>
+                </div>
+            </div>
+            <div class="col-md-2 col-xs-6">
+                <div class="single_ft quicklinks">
+                    <h4>Support</h4><!--Support-->
+                    <a name="Footer_Support_SupportCenter" href="https://www.proquest.com/company/support-landing.html">Support Center</a><br>
+                    <a name="Footer_Support_ToolsResources" href="https://www.proquest.com/customer-care/tools-resources/">Tools and Resources</a><br>
+                    <a name="Footer_Support_TrainingWebinars" href="https://www.proquest.com/customer-care/training-webinars/">Training Webinars</a><br>
+                    <a name="Footer_Support_LibGuides" href="https://proquest.libguides.com/home">LibGuides</a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-2 col-xs-6">
-          <div class="single_ft quicklinks">
-            <h4>Support</h4>
-            <!--Support--> 
-            <a name="Footer_Support_SupportCenter" href="https://www.proquest.com/company/support-landing.html" xt="SPCLICK" xtlinkname="Footer_Support_SupportCenter" xthyperlink="921349">Support Center</a><br>
-            <a name="Footer_Support_ToolsResources" href="https://www.proquest.com/customer-care/tools-resources/" xt="SPCLICK" xtlinkname="Footer_Support_ToolsResources" xthyperlink="921350">Tools and Resources</a><br>
-            <a name="Footer_Support_TrainingWebinars" href="https://www.proquest.com/customer-care/training-webinars/" xt="SPCLICK" xtlinkname="Footer_Support_TrainingWebinars" xthyperlink="921351">Training Webinars</a><br>
-            <a name="Footer_Support_LibGuides" href="https://proquest.libguides.com/home" xt="SPCLICK" xtlinkname="Footer_Support_LibGuides" xthyperlink="921352">LibGuides</a> </div>
-        </div>
-      </div>
     </div>
-  </div>
-  <!-- /.footer_one --> 
-  
-  <!-- For the "Cookie Preferences" footer link - served by trustarc.com --> 
-  <script src="https://consent.trustarc.com/notice?domain=proquest.com&c=teconsent&js=nj&noticeType=bb&text=true" async="async" crossorigin=""></script>
-  <div class="main_footer">
+</div><!-- /.footer_one -->
+ 
+<!-- For the "Cookie Preferences" footer link - served by trustarc.com -->
+<script src="https://consent.trustarc.com/notice?domain=proquest.com&c=teconsent&js=nj&noticeType=bb&text=true" async="async" crossorigin=""></script>
+ 
+<div class="main_footer">
     <div class="container links col-xs-12">
-      <div style="text-align: center;"> <a name="BottomNav_Privacy" href="https://www.proquest.com/about/privacy-statement.html" xt="SPCLICK" xtlinkname="BottomNav_Privacy" xthyperlink="921353">Privacy</a> <a name="BottomNav_TermsofUse" href="https://www.proquest.com/about/terms-and-conditions.html" xt="SPCLICK" xtlinkname="BottomNav_TermsofUse" xthyperlink="921354">Terms of Use</a> <a name="BottomNav_Cookies" href="https://www.proquest.com/about/cookie-policy.html" xt="SPCLICK" xtlinkname="BottomNav_Cookies" xthyperlink="921355">Cookies</a>
-        <div id="teconsent" style="display: inline;"></div>
-        <a name="BottomNav_Accessibility" href="https://www.proquest.com/company/ProQuest-ADA-Compliance.html" xt="SPCLICK" xtlinkname="BottomNav_Accessibility" xthyperlink="921356">Accessibility</a> <a name="BottomNav_DMCAPolicy" href="https://media2.proquest.com/documents/dmcapolicy.pdf" xt="SPCLICK" xtlinkname="BottomNav_DMCAPolicy" xthyperlink="921357">DMCA Policy</a> </div>
+        <div style="text-align: center;">
+            <a name="BottomNav_Privacy" href="https://www.proquest.com/about/privacy-statement.html">Privacy</a>
+            <a name="BottomNav_TermsofUse" href="https://www.proquest.com/about/terms-and-conditions.html">Terms of Use</a>
+            <a name="BottomNav_Cookies" href="https://www.proquest.com/about/cookie-policy.html">Cookies</a>
+            <div id="teconsent" style="display: inline;"></div>
+            <a name="BottomNav_Accessibility" href="https://www.proquest.com/company/ProQuest-ADA-Compliance.html">Accessibility</a>
+            <a name="BottomNav_DMCAPolicy" href="https://media2.proquest.com/documents/dmcapolicy.pdf">DMCA Policy</a>
+        </div>
     </div>
-  </div>
-  <!-- /.main_footer --> 
-  <!--*********************** End Footer Area ***********************--> 
-  
+</div><!-- /.main_footer -->
+ 
+<!-- ======== END Footer ======== -->  
 </div>
 </body>
-<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css" />
-<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css" />
-<link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type="text/css" />
-<link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet" type="text/css" />
-<link href="https://fonts.googleapis.com/css?family=Dancing+Script:400,700" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://www.proquest.com/includes/font-awesome.css"/>
-<link rel="stylesheet" href="https://www.proquest.com/includes/bootstrap.css" />
-<link rel="stylesheet" href="https://www.proquest.com/includes/IMC-style.css" />
-<link rel="stylesheet" href="https://www.proquest.com/includes/bootstrap-override-20140226.css" />
-
-<!--[if IE]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-<script src="https://www.sc.pages04.net/lp/static/js/iMAWebCookie.js?2aa8b034-139209dc9f9-6b01afd6fbb6724a9fe9ac1747b0e3f6&h=www.pages04.net" type="text/javascript"></script>
-<script src="https://www.proquest.com/includes/IMC-jquery-1.10.2.min.js"></script>
-<script src="https://www.proquest.com/includes/bootstrap.min.js"></script>
-<script src="https://www.proquest.com/includes/parsley.min.js"></script>
-<script src="https://www.proquest.com/includes/jquery.form.min.js"></script>
-<script src="https://www.proquest.com/includes/pq-clear-contact-form.js"></script>
-<script>
-// Enable Bootstrap tooltip for email field
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip();
-});
-</script>
-<style type="text/css">
-.parsley-error {
-	border: 2px solid #a51f1e;
-}
-.parsley-error:focus {
-	border: 2px solid #a51f1e;
-}
-.parsley-required {
-	color: #a51f1e;
-}
-.parsley-type {
-	color: #a51f1e;
-}
-#email-warning {
-	display: none;
-}
-.pq-lead-text {
-	font-size: 16px;
-}
-.tooltip-inner {
-	max-width: 275px;
-	color: #a94442;
-	background-color: #f2dede;
-	border-color: #ebccd1;
-	border-style: solid;
-	border-width: 1px;
-}
-/* ID needed here for specificity */
-#contact .tooltip-arrow {
-	border-top-color: #ebccd1;
-}
-.main_footer {
-	float: left;
-	width: 100%;
-	padding: 0;
-}
-.main_footer a {
-	color: white;
-}
-.main_footer .links {
-	padding: 5px 15px;
-}
-.main_footer .links a {
-	font-size: 12px;
-	padding: 5px;
-}
-a:hover, a:focus {
-	text-decoration: none;
-}
-</style>
-<script>
-// function to clear the form if it's not the person who opened it. Useful for people accessing via a public computer
-function formClear() {
-    $(':input', '#contact').not(':button, :submit, :reset, :hidden').val('').removeAttr('selected');
-    console.log("Form cleared"); ////////////////
-}
-
-$( document ).ready(function() {
-
-    var myVar = setInterval(function() { myTimer(); }, 10);
-    function myTimer() {
-        if (typeof ewt != 'undefined') {
-            clearInterval(myVar);
-            ewt.init(); 
-            console.log("EWT Initialized"); ////////////////
-        } else {
-            console.log("Not Initialized"); ////////////////
-        }
-    }
-
-    // From pq-clear-contact-form.js - disallow changing the email address if already set
-    initContactForm('contact', 'control_EMAIL'); // modify this to pass form, email IDs
-
-    // ======== Decide which form groups to display ========
-    $('.grpOne').find('select, input[type="text"]').each(function() {
-        if ($(this).find('option:selected').text() != "") {
-            // IS a select drop down
-            itemVal = $(this).find('option:selected').text();
-            if (itemVal === "Select one"){
-                g1Flag = false;
-console.log("Group 1 drop down is Empty: "+this.id);
-                return false;
-            } else {
-                g1Flag = true;
-console.log("Group 1 drop down is Populated: "+this.value);  
-            }
-        } else {
-            // IS a text field
-            itemVal = this.value;
-            if (itemVal === "") {
-                g1Flag = false;
-console.log("Group 1 text is Empty: "+this.id);
-                return false;
-            } else {
-                g1Flag = true;
-console.log("Group 1 text is Populated: "+this.value);  
-            }
-        }
-    });
-
-    $('.grpTwo').find('select, input[type="text"]').each(function() {
-        if ($(this).find('option:selected').text() != "") {
-            // IS a select drop down
-            itemVal = $(this).find('option:selected').text();
-            if (itemVal === "Select one"){
-                g2Flag = false;
-console.log("Group 2 drop down is Empty: "+this.id);
-                return false;
-            } else {
-                g2Flag = true;
-console.log("Group 2 drop down is Populated: "+this.value);  
-            }
-        } else {
-            // IS a text field
-            itemVal = this.value;
-            if (itemVal === "") {
-                g2Flag = false;
-console.log("Group 2 text is Empty: "+this.id);
-                return false;
-            } else {
-                g2Flag = true;
-console.log("Group 2 text is Populated: "+this.value);  
-            }
-        }
-    });
-
-    if(g1Flag === true) {                        // group 1 is complete
-        $(".grpOne").addClass("hide");
-    }
-    if(g1Flag === false || g2Flag === true) {    // group 2 is complete OR group 1 is not
-        $(".grpTwo").addClass("hide");
-    }
-
-console.log("g1: ", g1Flag, "  g2: ", g2Flag);
-
-    //Sets the date for the "Last Touch Lead Source Date"
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1;    // January is 0!
-    var yyyy = today.getFullYear();
-
-    if (dd < 10) { dd = '0'+dd };
-    if (mm < 10) { mm = '0'+mm };
-    today = mm+'/'+dd+'/'+yyyy;
-    $("#LastTouchLeadSourceDate").val(today);           // Sets hidden field for current date
-    $("#LastTouchLeadSource").val("Targeted Email");    // Sets hidden field for LastTouchLeadSource
-
-    console.log("End Doc Ready"); ////////////////
-
-}); // END Doc Ready
-</script>
 
 <!-- Facebook Pixel Code -->
 <script>
