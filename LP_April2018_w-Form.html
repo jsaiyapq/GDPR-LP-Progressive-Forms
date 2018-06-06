@@ -16,6 +16,9 @@
 <link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap-select.css" />
 <link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/print-stylesheet.css" media="print" />
 <style type="text/css">
+.parsley-border { /* must come before .parsley-error */
+    border: 2px solid transparent;
+}
 .parsley-error {
     border: 2px solid #a51f1e;
 }
@@ -34,6 +37,10 @@
 #contact {
     color: #ffffff;
 }
+#contact a {
+    color: #ffffff;
+    text-decoration: underline;
+}
 #email-warning {
     display: none;
 }
@@ -46,8 +53,7 @@
     background-color: #f2dede;
     border: 1px solid #ebccd1;
 }
-/* ID needed here for specificity */
-#contact .tooltip-arrow {
+#contact .tooltip-arrow { /* id needed here for specificity */
     border-top-color: #ebccd1;
 }
 .main_footer {
@@ -76,9 +82,13 @@ a:hover, a:focus {
 <script src="https://www.proquest.com/includes/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.7.2/parsley.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script>
+/*
+ * Document Ready function
+ */
 $( document ).ready(function() {
+
+    console.log('Begin Doc Ready.'); ////////////////
 
     var myVar = setInterval(function() { myTimer(); }, 10);
     function myTimer() {
@@ -99,26 +109,26 @@ $( document ).ready(function() {
 
     // lock the email field
     //  only if the hidden field with a recipient's ID is present
-    //  and there is content in the email field (in case something goes wrong)
-    if ( $('[name="RECIPIENT_ID_*"]').length && $('#email').val().length ) {
-
-        // show the "Clear the form" prompt
-        $('#clear-identity-prompt').show();
+    //  and there is content in the email field (allows us to enter a new email if something goes wrong)
+    if ( $('[name="RECIPIENT_ID_*"]').length && $('#control_EMAIL').val().length ) {
 
         // show the email warning prompt
         $('#email-warning').show();
 
+        // show the "Clear the form" prompt
+        $('#clear-identity-prompt').show();
+
         // disable email field
-        $('#email').prop('disabled', 'disabled');
+        $('#control_EMAIL').prop('disabled', 'disabled');
 
         // do not require validation on disabled fields
-        $('#email').removeProp('required');
+        $('#control_EMAIL').removeProp('required');
 
     }
 
     // enable email field before submitting form, otherwise value will not be sent
     $('#contact').submit(function() {
-        $('#email').prop('disabled', false);
+        $('#control_EMAIL').prop('disabled', false);
     });
 
     // set any element with the class "clear-identity-action" to call the clearing function when clicked
@@ -126,67 +136,8 @@ $( document ).ready(function() {
         clearIdentity();
     });
 
-    // ======== Decide which form groups to display ========
-    //function displayGroups() {
-    $('.grpOne').find('select, input[type="text"]').each(function() {
-        if ($(this).find('option:selected').text() != '') {  // IS a select drop down
-            itemVal = $(this).find('option:selected').text();
-            if (itemVal === 'Select one') {
-                g1Flag = false;
-                console.log('Group 1 drop down is Empty: '+this.id); ////////////////
-                return false;
-            } else {
-                g1Flag = true;
-                console.log('Group 1 drop down is Populated: '+this.value); ////////////////
-            }
-        } else {  // IS a text field
-            itemVal = this.value;
-            if (itemVal === '') {
-                g1Flag = false;
-                console.log('Group 1 text is Empty: '+this.id); ////////////////
-                return false;
-            } else {
-                g1Flag = true;
-                console.log('Group 1 text is Populated: '+this.value); ////////////////
-            }
-        }
-    });
-
-    $('.grpTwo').find('select, input[type="text"]').each(function() {
-        if ($(this).find('option:selected').text() != '') {  // IS a select drop down
-            itemVal = $(this).find('option:selected').text();
-            if (itemVal === 'Select one') {
-                g2Flag = false;
-                console.log('Group 2 drop down is Empty: '+this.id); ////////////////
-                return false;
-            } else {
-                g2Flag = true;
-                console.log('Group 2 drop down is Populated: '+this.value); ////////////////
-            }
-        } else {  // IS a text field
-            itemVal = this.value;
-            if (itemVal === '') {
-                g2Flag = false;
-                console.log('Group 2 text is Empty: '+this.id); ////////////////
-                return false;
-            } else {
-                g2Flag = true;
-                console.log('Group 2 text is Populated: '+this.value); ////////////////
-            }
-        }
-    });
-
-    if (g1Flag === true) {                        // group 1 is complete
-        $('.grpOne').addClass('hide');
-    }
-    if (g1Flag === false || g2Flag === true) {    // group 2 is complete OR group 1 is not
-        $('.grpTwo').addClass('hide');
-    }
-
-    console.log('g1: ', g1Flag, '  g2: ', g2Flag); ////////////////
-    //}
-
-//    displayGroups();
+    // decide which form groups to display
+    displayProgressiveForm();
 
     // set the date for the "Last Touch Lead Source Date"
     var today = new Date();
@@ -199,12 +150,12 @@ $( document ).ready(function() {
     today = mm+'/'+dd+'/'+yyyy;
     $('#LastTouchLeadSourceDate').val(today);    // set hidden field for current date
 
-    console.log('End Doc Ready'); ////////////////
+    console.log('End Doc Ready.'); ////////////////
 
-}); // END Doc Ready
+});
 
 /*
- * Clear the contact form, and hidden recipient id field
+ * Function to clear the contact form and hidden recipient id field
  *  This is called from any link or button in the page with the class "clear-identity-action"
  */
 function clearIdentity() {
@@ -216,22 +167,85 @@ function clearIdentity() {
     // clear the form fields
     $('#contact').clearForm();  // (from jquery.form.js)
 
+    // remove Parsley error borders
+    $('#contact').parsley().reset();
+
     // hide the email warning prompt
     $('#email-warning').hide();
 
     // hide the "Clear the form" prompt
     $('#clear-identity-prompt').hide();
 
-    // display group one on blank form
-//    displayGroups();
+    // display first group of fields on blank form
+    displayProgressiveForm();
 
     // enable email field
-    $('#email').prop('disabled', false);
+    $('#control_EMAIL').prop('disabled', false);
 
     // require an email address
-    $('#email').prop('required', 'required');
+    $('#control_EMAIL').prop('required', 'required');
 
-    $('#email').focus();
+    $('#control_EMAIL').focus();
+
+}
+
+/*
+ * Function to display Group 1 fields, Group 2 fields, or neither
+ *  depending on what fields, if any, have data
+ */
+function displayProgressiveForm() {
+
+    $('.grpOne').removeClass('hide');
+    $('.grpTwo').removeClass('hide');
+
+    var g1Flag = true;
+    $('.grpOne').find('select, input[type="text"]').each(function() {
+        if ($(this).find('option:selected').text() != '') {
+        // it is a select drop down
+            itemVal = $(this).find('option:selected').text();
+            if (itemVal === 'Select one') {
+                g1Flag = false;
+                return false;
+            }
+        } else {
+        // it is a text field
+            itemVal = this.value;
+            if (itemVal === '') {
+                g1Flag = false;
+                return false;
+            }
+        }
+    });
+
+    var g2Flag = true;
+    $('.grpTwo').find('select, input[type="text"]').each(function() {
+        if ($(this).find('option:selected').text() != '') {
+        // it is a select drop down
+            itemVal = $(this).find('option:selected').text();
+            if (itemVal === 'Select one') {
+                g2Flag = false;
+                return false;
+            }
+        } else {
+        // it is a text field
+            itemVal = this.value;
+            if (itemVal === '') {
+                g2Flag = false;
+                return false;
+            }
+        }
+    });
+
+    console.log('g1:', g1Flag, '  g2:', g2Flag); ////////////////
+
+    if (g1Flag === true) {                        // group 1 is complete
+        $('.grpOne').addClass('hide');
+        console.log('Hiding group 1'); ////////////////
+    }
+    if (g1Flag === false || g2Flag === true) {    // group 2 is complete OR group 1 is not
+        $('.grpTwo').addClass('hide');
+        console.log('Hiding group 2'); ////////////////
+    }
 
 }
 </script>
@@ -322,7 +336,7 @@ function clearIdentity() {
       <!--******************** End CTA Copy *********************-->
     </div>
     <!--******************** End Summary Copy *********************-->
-    
+
     <!--******************** Start Form Area **********************-->
     <div class="col-md-6 col-md-offset-1">
       <div class="left-contact-form">
@@ -331,34 +345,34 @@ function clearIdentity() {
 
           <form id="contact" name="contact" method="post" class="pq-contact" autocomplete="off">
             <!-- Autocomplete set to "off" for compatibility workaround for Firefox. -->
-            
+
             <div id="email-warning">
-              <p style="font-size: 15px;"><strong>For security purposes and protection of customer data, we have disabled the ability to edit your email address within this form.</strong></p>
-              <p style="font-size: 13px;">To update your email address, please register again by submitting a <a href="#" class="clear-identity-action" style="text-decoration: underline;" name="NewForm" xt="SPNOTRACK">new form</a>.</p>
+              <p class="pq-lead-text"><strong>For security purposes and protection of customer data, we have disabled the ability to edit your email address within this form.</strong></p>
+              <p style="font-size: 13px;">To update your email address, please register again by submitting a <a href="#" class="clear-identity-action" name="NewForm" xt="SPNOTRACK">new form</a>.</p>
             </div>
-            
+
             <div class="form-group">
               <label for="control_EMAIL">Email <span class="parsley-required">*</span></label>
               <input type="text" name="Email" id="control_EMAIL" class="form-control" required="" data-toggle="tooltip" data-placement="top"
-                title="For security purposes and protection of customer data, you will not be able to change your email address once you subscribe."/>
+                title="For security purposes and protection of customer data, you will not be able to change your email address once you subscribe.">
             </div>
 
             <!-- Group 1 fields -->
             <div class="form-group grpOne">
-              <label for="control_COLUMN30">First Name <span class="parsley-required">*</span></label>
-              <input type="text" name="First Name" id="control_COLUMN30" class="form-control" required="" value="">
+              <label for="control_FIRSTNAME">First Name <span class="parsley-required">*</span></label>
+              <input type="text" name="First Name" id="control_FIRSTNAME" class="form-control" required="" value="">
             </div>
             <div class="form-group grpOne">
-              <label for="control_COLUMN16">Last Name <span class="parsley-required">*</span></label>
-              <input type="text" name="Last Name" id="control_COLUMN16" class="form-control" required="" value="">
+              <label for="control_LASTNAME">Last Name <span class="parsley-required">*</span></label>
+              <input type="text" name="Last Name" id="control_LASTNAME" class="form-control" required="" value="">
             </div>
             <div class="form-group grpOne">
-              <label for="control_COLUMN166">Organization Name <span class="parsley-required">*</span></label>
-              <input type="text" name="Organization Name" id="control_COLUMN166" class="form-control" required="" value="">
+              <label for="control_ORGNAME">Organization Name <span class="parsley-required">*</span></label>
+              <input type="text" name="Organization Name" id="control_ORGNAME" class="form-control" required="" value="">
             </div>
             <div class="form-group grpOne">
-              <label for="control_COLUMN41">Job Function <span class="parsley-required">*</span></label>
-              <select name="Job Function" id="control_COLUMN41" class="form-control selectpicker" required="" >
+              <label for="control_JOBFUNCTION">Job Function <span class="parsley-required">*</span></label>
+              <select name="Job Function" id="control_JOBFUNCTION" class="form-control selectpicker" required="" >
                 <option value="" selected>Select one</option>
                 <option value="Academic/Faculty/Teacher/Instructor" >Academic/Faculty/Teacher/Instructor</option>
                 <option value="Academic Dept Chair/Dean/Director (Not Librarian)" >Academic Dept Chair/Dean/Director (Not Librarian)</option>
@@ -408,8 +422,8 @@ function clearIdentity() {
 
             <!-- Group 2 fields -->
             <div class="form-group grpTwo">
-              <label for="control_COLUMN26">Market <span class="parsley-required">*</span></label>
-              <select name="Market" id="control_COLUMN26" class="form-control selectpicker" required="" >
+              <label for="control_MARKET">Market <span class="parsley-required">*</span></label>
+              <select name="Market" id="control_MARKET" class="form-control selectpicker" required="" >
                 <option value="" selected>Select one</option>
                 <option value="Academic" >Academic</option>
                 <option value="Consortia" >Consortia</option>
@@ -422,8 +436,8 @@ function clearIdentity() {
               </select>
             </div>
             <div class="form-group grpTwo">
-              <label for="control_COLUMN23">Sub-Market <span class="parsley-required">*</span></label>
-              <select name="Sub_Market" id="control_COLUMN23" class="form-control selectpicker" required="" >
+              <label for="control_SUBMARKET">Sub-Market <span class="parsley-required">*</span></label>
+              <select name="Sub_Market" id="control_SUBMARKET" class="form-control selectpicker" required="" >
                 <option value="" selected>Select one</option>
                 <option value="Academic" >Academic</option>
                 <option value="Academic - Faculty" >Academic - Faculty</option>
@@ -527,8 +541,8 @@ function clearIdentity() {
               </select>
             </div>
             <div class="form-group grpTwo">
-              <label for="control_COLUMN40">Country</label>
-              <select name="Country" id="control_COLUMN40" class="form-control selectpicker">
+              <label for="control_COUNTRY">Country</label>
+              <select name="Country" id="control_COUNTRY" class="form-control selectpicker">
                 <option value="" selected>Select one</option>
                 <option value="Afghanistan" >Afghanistan</option>
                 <option value="Algeria" >Algeria</option>
@@ -689,8 +703,8 @@ function clearIdentity() {
               </select>
             </div>
             <div class="form-group grpTwo">
-              <label for="control_COLUMN44">State or Province <span class="parsley-required">*</span></label>
-              <input type="text" name="State_Province" id="control_COLUMN44" class="form-control" required="" value="">
+              <label for="control_STATE">State or Province</label>
+              <input type="text" name="State_Province" id="control_STATE" class="form-control" value="">
             </div>
 
             <!-- Double Opt-in -->
@@ -698,16 +712,17 @@ function clearIdentity() {
               <div class="col-xs-12">
                 <p>Privacy regulations require that we get your consent to continue to collect, store and use the personal information submitted for account creation or collected while using our services.</p>
                 <div class="form-group">
-                  <p><span class="parsley-required">*</span>&nbsp;
-                    <input type="checkbox" value="Yes" name="Double OptIn" required="" />
-                    I consent to the collection and use of my personal information consistent with the <a href="https://www.proquest.com/go/privacy" style="text-decoration: underline;" name="httpswwwproquestcomgoprivacy">Privacy Policy</a>.
-                    I&nbsp;acknowledge that use of the service is subject to the <a href="https://proquest.com/go/termsandconditions" style="text-decoration: underline;" name="httpsproquestcomgotermsandconditions">Terms & Conditions</a>.</p>
+                  <p class="parsley-border"><span class="parsley-required">*</span>&nbsp;
+                    <input type="checkbox" name="Double OptIn" id="control_OPTIN" required="" value="Yes">
+                    I consent to the collection and use of my personal information consistent with the <a href="https://www.proquest.com/go/privacy" name="httpswwwproquestcomgoprivacy">Privacy Policy</a>.
+                    I&nbsp;acknowledge that use of the service is subject to the <a href="https://proquest.com/go/termsandconditions" name="httpsproquestcomgotermsandconditions">Terms & Conditions</a>.
+                  </p>
                 </div>
               </div>
             </div>
 
             <div style="text-align: center;">
-              <p id="clear-identity-prompt" style="display: none;"><strong>Not you?</strong> Please <a href="#" style="text-decoration: underline" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
+              <p id="clear-identity-prompt" style="display: none;"><strong>Not you?</strong> Please <a href="#" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
               <input type="submit" class="btn btn-primary btn-lg" value="Submit">
             </div>
             
