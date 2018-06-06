@@ -17,56 +17,56 @@
 <link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/print-stylesheet.css" media="print" />
 <style type="text/css">
 .parsley-error {
-	border: 2px solid #a51f1e;
+    border: 2px solid #a51f1e;
 }
 .parsley-error:focus {
-	border: 2px solid #a51f1e;
+    border: 2px solid #a51f1e;
 }
 .parsley-error-list {
-  color: #a51f1e;
+    color: #a51f1e;
 }
 .parsley-required {
-	color: #a51f1e;
+    color: #a51f1e;
 }
 .parsley-type {
-	color: #a51f1e;
+    color: #a51f1e;
 }
 #contact {
-	color: #ffffff;
+    color: #ffffff;
 }
 #email-warning {
-	display: none;
+    display: none;
 }
 .pq-lead-text {
-	font-size: 16px;
+    font-size: 16px;
 }
 .tooltip-inner {
-	max-width: 275px;
-	color: #a94442;
-	background-color: #f2dede;
-	border: 1px solid #ebccd1;
+    max-width: 275px;
+    color: #a94442;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
 }
 /* ID needed here for specificity */
 #contact .tooltip-arrow {
-	border-top-color: #ebccd1;
+    border-top-color: #ebccd1;
 }
 .main_footer {
-	float: left;
-	width: 100%;
-	padding: 0;
+    float: left;
+    width: 100%;
+    padding: 0;
 }
 .main_footer a {
-	color: white;
+    color: white;
 }
 .main_footer .links {
-	padding: 5px 15px;
+    padding: 5px 15px;
 }
 .main_footer .links a {
-	font-size: 12px;
-	padding: 5px;
+    font-size: 12px;
+    padding: 5px;
 }
 a:hover, a:focus {
-	text-decoration: none;
+    text-decoration: none;
 }
 </style>
 
@@ -77,7 +77,6 @@ a:hover, a:focus {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.7.2/parsley.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-<!--<script src="https://www.proquest.com/includes/pq-clear-contact-form.js"></script>-->
 <script>
 $( document ).ready(function() {
 
@@ -86,16 +85,16 @@ $( document ).ready(function() {
         if (typeof ewt != 'undefined') {
             clearInterval(myVar);
             ewt.init(); 
-            console.log("EWT Initialized"); ////////////////
+            console.log('EWT Initialized'); ////////////////
         } else {
-            console.log("Not Initialized"); ////////////////
+            console.log('Not Initialized'); ////////////////
         }
     }
 
     // set up Parsley
     $('#contact').parsley({ excluded: ':hidden', errorMessage: '', requiredMessage: '' });
 
-    // Enable Bootstrap tooltip for email field
+    // enable Bootstrap tooltip for email field
     $('[data-toggle="tooltip"]').tooltip();
 
     // lock the email field
@@ -103,96 +102,89 @@ $( document ).ready(function() {
     //  and there is content in the email field (in case something goes wrong)
     if ( $('[name="RECIPIENT_ID_*"]').length && $('#email').val().length ) {
 
-      // show the "Clear the form" prompt
-      $('#clear-identity-prompt').show();
+        // show the "Clear the form" prompt
+        $('#clear-identity-prompt').show();
 
-      // show the email warning prompt
-      $('#email-warning').show();
+        // show the email warning prompt
+        $('#email-warning').show();
 
-      // disable email field
-      $('#email').prop('disabled', 'disabled');
+        // disable email field
+        $('#email').prop('disabled', 'disabled');
 
-      // do not require validation on disabled fields
-      $('#email').removeProp('required');
+        // do not require validation on disabled fields
+        $('#email').removeProp('required');
 
     }
 
     // enable email field before submitting form, otherwise value will not be sent
-    $('#contact').submit(function(e) {
-      $('#email').prop('disabled', false);
+    $('#contact').submit(function() {
+        $('#email').prop('disabled', false);
     });
 
     // set any element with the class "clear-identity-action" to call the clearing function when clicked
     $('.clear-identity-action').click(function() {
-      clearIdentity();
+        clearIdentity();
     });
-
-    // From pq-clear-contact-form.js - disallow changing the email address if already set
-//    initContactForm('contact', 'control_EMAIL'); // modify this to pass form, email IDs
 
     // ======== Decide which form groups to display ========
     $('.grpOne').find('select, input[type="text"]').each(function() {
-        if ($(this).find('option:selected').text() != "") {
-            // IS a select drop down
+        if ($(this).find('option:selected').text() != '') {  // IS a select drop down
             itemVal = $(this).find('option:selected').text();
-            if (itemVal === "Select one"){
+            if (itemVal === 'Select one') {
                 g1Flag = false;
-console.log("Group 1 drop down is Empty: "+this.id);
+                console.log('Group 1 drop down is Empty: '+this.id); ////////////////
                 return false;
             } else {
                 g1Flag = true;
-console.log("Group 1 drop down is Populated: "+this.value);  
+                console.log('Group 1 drop down is Populated: '+this.value); ////////////////
             }
-        } else {
-            // IS a text field
+        } else {  // IS a text field
             itemVal = this.value;
-            if (itemVal === "") {
+            if (itemVal === '') {
                 g1Flag = false;
-console.log("Group 1 text is Empty: "+this.id);
+                console.log('Group 1 text is Empty: '+this.id); ////////////////
                 return false;
             } else {
                 g1Flag = true;
-console.log("Group 1 text is Populated: "+this.value);  
+                console.log('Group 1 text is Populated: '+this.value); ////////////////
             }
         }
     });
 
     $('.grpTwo').find('select, input[type="text"]').each(function() {
-        if ($(this).find('option:selected').text() != "") {
-            // IS a select drop down
+        if ($(this).find('option:selected').text() != '') {  // IS a select drop down
             itemVal = $(this).find('option:selected').text();
-            if (itemVal === "Select one"){
+            if (itemVal === 'Select one') {
                 g2Flag = false;
-console.log("Group 2 drop down is Empty: "+this.id);
+                console.log('Group 2 drop down is Empty: '+this.id); ////////////////
                 return false;
             } else {
                 g2Flag = true;
-console.log("Group 2 drop down is Populated: "+this.value);  
+                console.log('Group 2 drop down is Populated: '+this.value); ////////////////
             }
-        } else {
-            // IS a text field
+        } else {  // IS a text field
             itemVal = this.value;
-            if (itemVal === "") {
+            if (itemVal === '') {
                 g2Flag = false;
-console.log("Group 2 text is Empty: "+this.id);
+                console.log('Group 2 text is Empty: '+this.id); ////////////////
                 return false;
             } else {
                 g2Flag = true;
-console.log("Group 2 text is Populated: "+this.value);  
+                console.log('Group 2 text is Populated: '+this.value); ////////////////
             }
         }
     });
 
-    if(g1Flag === true) {                        // group 1 is complete
-        $(".grpOne").addClass("hide");
+    if (g1Flag === true) {                        // group 1 is complete
+        $('.grpOne').addClass('hide');
     }
-    if(g1Flag === false || g2Flag === true) {    // group 2 is complete OR group 1 is not
-        $(".grpTwo").addClass("hide");
+    if (g1Flag === false || g2Flag === true) {    // group 2 is complete OR group 1 is not
+        $('.grpTwo').addClass('hide');
     }
 
-console.log("g1: ", g1Flag, "  g2: ", g2Flag);
+    console.log('g1: ', g1Flag, '  g2: ', g2Flag); ////////////////
 
-    //Sets the date for the "Last Touch Lead Source Date"
+    // set the date for the "Last Touch Lead Source Date"
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth() + 1;    // January is 0!
@@ -201,13 +193,13 @@ console.log("g1: ", g1Flag, "  g2: ", g2Flag);
     if (dd < 10) { dd = '0'+dd };
     if (mm < 10) { mm = '0'+mm };
     today = mm+'/'+dd+'/'+yyyy;
-    $("#LastTouchLeadSourceDate").val(today);           // Sets hidden field for current date
+    $('#LastTouchLeadSourceDate').val(today);    // set hidden field for current date
 
-    console.log("End Doc Ready"); ////////////////
+    console.log('End Doc Ready'); ////////////////
 
 }); // END Doc Ready
 
-/**
+/*
  * Clear the contact form, and hidden recipient id field
  *  This is called from any link or button in the page with the class "clear-identity-action"
  */
@@ -240,56 +232,69 @@ function clearIdentity() {
 
 <body>
 
-<!--*********************** Start Header ***********************-->
-<div class="header-area"><!-- add 'id="topbar"' to match www.proquest.com style -->
+<!--************************* Start Header *************************-->
+<div class="header-area">
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <nav class="navbar navbar-default"> <!-- add 'style="min-height: 33px;"' to match www.proquest.com -->
-          <div class="container-fluid"><!-- Brand and toggle get grouped for better mobile display -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle navigation</span></button>
-            </div>
+              <button aria-expanded="false" data-target="#navbar-collapse-1" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar">&nbsp;</span>
+                <span class="icon-bar">&nbsp;</span>
+                <span class="icon-bar">&nbsp;</span>
+              </button>
+            </div><!-- /.navbar-header -->
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div id="navbar-collapse-1" class="collapse navbar-collapse">
               <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://www.proquest.com/company/support-landing.html" name="TopNav_SupportCenter" xt="SPCLICKSTREAM" xtlinkname="TopNav_SupportCenter" xthyperlink="920918">Support Center</a></li>
-                <li><a href="http://www.proquest.com/about/news/" name="TopNavNews" xt="SPCLICKSTREAM" xtlinkname="TopNavNews" xthyperlink="920919">News</a></li>
-                <li><a href="http://www.proquest.com/contact/contact-landing.html" name="TopNav_Contact" xt="SPCLICKSTREAM" xtlinkname="TopNav_Contact" xthyperlink="920920">Contact</a></li>
+                <li><a name="TopNav_SupportCenter" href="https://www.proquest.com/company/support-landing.html">Support Center |</a></li>
+                <li><a name="TopNavNews" href="https://www.proquest.com/about/news/">News |</a></li>
+                <li><a name="TopNav_Contact" href="https://www.proquest.com/contact/contact-landing.html">Contact</a></li>
               </ul>
-            </div>
-            <!-- /.navbar-collapse --></div>
-          <!-- /.container-fluid --> </nav>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
       </div>
     </div>
   </div>
-</div>
+</div><!-- /.header-area -->
+
 <div class="proquest_part">
   <div class="container">
     <div class="col-md-12">
-      <div class="inner_proquest" style="padding: 10px;"><a href="http://www.proquest.com" name="Top_PQ_Logo" xtlinkname="Top_PQ_Logo" xt="SPCLICKSTREAM" target="_blank" xthyperlink="920921"><img src="LandingPage_updatedlogo_0.png" class="img-responsive" alt="ProQuest Logo" name="LandingPage_updatedlogo_0.png" title="ProQuest Logo" width="169" height="66"   xt="SPIMAGE" contentid="22011639" spname="LandingPage_updatedlogo_0.png" /></a></div>
+      <div class="inner_proquest" style="padding: 10px;">
+        <a href="https://www.proquest.com" target="_blank" name="Top_PQ_Logo" xtlinkname="Top_PQ_Logo" xt="SPCLICKSTREAM" xthyperlink="920921">
+          <img src="LandingPage_updatedlogo_0.png" alt="ProQuest" class="img-responsive" width="169" height="66" spname="LandingPage_updatedlogo_0.png" xt="SPIMAGE" contentid="22011639" />
+        </a>
+      </div>
     </div>
   </div>
-</div>
-<!--*********************** End Header ***********************--> 
+</div><!-- /.proquest_part -->
+<!--************************** End Header **************************-->
 
 <!--*********************** Start Hero Image ***********************-->
 <div class="overview_part">
   <div class="container">
     <div class="col-md-12">
-      <div class="left_overview"><img src="demobanner_1140x380.jpg" class="img-responsive" alt="" style="font-size:20px; color: #444444;" title="Hero image" width="1140" height="380"   xt="SPIMAGE" contentid="22011640" spname="demobanner_1140x380.jpg" />
-        <h3 style="font-weight:bold;">Landing Page title: Keep under 15 words, simple, easy to read and scan.</h3>
+      <div class="left_overview">
+        <img src="demobanner_1140x380.jpg" alt="" class="img-responsive" width="1140" height="380" spname="demobanner_1140x380.jpg" xt="SPIMAGE" contentid="22011640" />
+        <h3 style="font-weight: bold;">Landing Page title: Keep under 15 words, simple, easy to read and scan.</h3>
       </div>
     </div>
   </div>
-</div>
-<!--*********************** End Hero Image ***********************--> 
+</div><!-- /.overview_part -->
+<!--************************ End Hero Image ************************-->
 
-<!--*********************** Start Summary Copy ***********************-->
 <div class="background_part">
   <div class="container">
     <div class="col-md-12">
-      <div class="col-md-5" style="color: #FFF; margin-top: 15px;">
+
+      <!--*********************** Start Summary Copy ***********************-->
+      <div class="col-md-5" style="margin-top: 15px;">
         <div class="right-content-parts">
           <p>Overview and reinforcement of landing page.</p>
           <p>Supporting copy, preview of content, etc. will go here. Additional sections and changes can be made.  On the Source Code, look for the comment section labeled <span style="color:red;"> "Start Summary Copy"</span>.  There will be separate paragraph tags within each different block of copy.</p>
@@ -299,17 +304,18 @@ function clearIdentity() {
             <li>&bull; Placeholder for bullet item 2</li>
             <li>&bull; Placeholder for bullet item 3</li>
           </ul>
-          <p>This is a great place to add in some final content or text before the CTA button. <br>
-            <span style="font-size:15px; color:red;"><em>If the CTA button isn't needed, look for the comment section labeled "Start CTA Copy", and remove from the Start to Finish comment areas.</em></span></p>
+          <p>This is a great place to add in some final content or text before the CTA button.</p>
         </div>
         <!--*********************** Start CTA Copy ***********************-->
-        <div> <a href="http://www.example.com" style="background-color:#00A0DF;border:1px solid #00A0DF;border-radius:4px;color:#ffffff;display:inline-block;font-family:'Open Sans', Arial; font-size:18px;font-weight:normal;line-height:80px;text-align:center;text-decoration:none;width:350px;-webkit-text-size-adjust:none;mso-hide:all;" xt="SPCLICK" xtlinkname="httpwwwexamplecom" name="httpwwwexamplecom" xthyperlink="920922">Use this CTA button if it makes sense! </a> </div>
+        <p><em style="font-size: 15px; color: red;">If the CTA button isn't needed, look for the comment section labeled "Start CTA Copy", and remove from the Start to Finish comment areas.</em></p>
+        <div>
+          <a href="http://www.example.com" style="background-color:#00A0DF;border:1px solid #00A0DF;border-radius:4px;color:#ffffff;display:inline-block;font-family:'Open Sans', Arial; font-size:18px;font-weight:normal;line-height:80px;text-align:center;text-decoration:none;width:350px;-webkit-text-size-adjust:none;mso-hide:all;" xt="SPCLICK" xtlinkname="httpwwwexamplecom" name="httpwwwexamplecom" xthyperlink="920922">Use this CTA button if it makes sense!</a>
+        </div>
+        <!--************************ End CTA Copy ************************-->
       </div>
-      <!--*********************** End CTA Copy ***********************--> 
+      <!--************************** End Summary Copy **********************-->
       
-      <!--*********************** End Summary Copy *******************--> 
-      
-      <!--*********************** Start Form Area ***********************-->
+      <!--*********************** Start Form Area ************************-->
       <div class="col-md-6 col-md-offset-1 ">
         <div class="left-contact-form">
           <div class="contact-forms">
@@ -319,8 +325,8 @@ function clearIdentity() {
               <!-- Autocomplete set to "off" for compatibility workaround for Firefox. -->
               
               <div id="email-warning">
-                <p class="pq-lead-text" style="font-size: 15px;"><strong>For security purposes and protection of customer data, we have disabled the ability to edit your email address within this form.</strong></p>
-                <p style="color:#333333; font-size: 13px;">To update your email address, please register again by submitting a <a href="#" class="clear-identity-action" style="color:#333333; text-decoration:underline; font-size: 13px;" name="NewForm" xt="SPNOTRACK">new form</a>.</p>
+                <p style="font-size: 15px;"><strong>For security purposes and protection of customer data, we have disabled the ability to edit your email address within this form.</strong></p>
+                <p style="font-size: 13px;">To update your email address, please register again by submitting a <a href="#" class="clear-identity-action" style="text-decoration: underline;" name="NewForm" xt="SPNOTRACK">new form</a>.</p>
               </div>
               
               <div class="form-group">
@@ -328,21 +334,23 @@ function clearIdentity() {
                 <input type="text" name="Email" id="control_EMAIL" class="form-control" required="" data-toggle="tooltip" data-placement="top"
                   title="For security purposes and protection of customer data, you will not be able to change your email address once you subscribe."/>
               </div>
+
+              <!-- Group 1 fields -->
               <div class="form-group grpOne">
-                <label for="usr">First Name</label>
-                <input type="text" name="First Name" id="control_COLUMN30" label="First Name" class="form-control" required="" value="">
+                <label for="control_COLUMN30">First Name <span class="parsley-required">*</span></label>
+                <input type="text" name="First Name" id="control_COLUMN30" class="form-control" required="" value="">
               </div>
               <div class="form-group grpOne">
-                <label for="usr">Last Name</label>
-                <input type="text" name="Last Name" id="control_COLUMN16" label="Last Name" class="form-control" required="" value="">
+                <label for="control_COLUMN16">Last Name <span class="parsley-required">*</span></label>
+                <input type="text" name="Last Name" id="control_COLUMN16" class="form-control" required="" value="">
               </div>
               <div class="form-group grpOne">
-                <label for="usr">Organization Name</label>
-                <input type="text" name="Organization Name" id="control_COLUMN166" label="Organization Name" class="form-control" required="" value="">
+                <label for="control_COLUMN166">Organization Name <span class="parsley-required">*</span></label>
+                <input type="text" name="Organization Name" id="control_COLUMN166" class="form-control" required="" value="">
               </div>
               <div class="form-group grpOne">
-                <label for="usr">Job Function</label>
-                <select name="Job Function" id="control_COLUMN41" label="Job Function" class="form-control" required >
+                <label for="control_COLUMN41">Job Function <span class="parsley-required">*</span></label>
+                <select name="Job Function" id="control_COLUMN41" class="form-control selectpicker" required="" >
                   <option value="" selected>Select one</option>
                   <option value="Academic/Faculty/Teacher/Instructor" >Academic/Faculty/Teacher/Instructor</option>
                   <option value="Academic Dept Chair/Dean/Director (Not Librarian)" >Academic Dept Chair/Dean/Director (Not Librarian)</option>
@@ -389,9 +397,11 @@ function clearIdentity() {
                   <option value="Other" >Other</option>
                 </select>
               </div>
+
+              <!-- Group 2 fields -->
               <div class="form-group grpTwo">
-                <label for="usr">Market</label>
-                <select name="Market" id="control_COLUMN26" label="Market" class="form-control selectpicker" required >
+                <label for="control_COLUMN26">Market <span class="parsley-required">*</span></label>
+                <select name="Market" id="control_COLUMN26" class="form-control selectpicker" required="" >
                   <option value="" selected>Select one</option>
                   <option value="Academic" >Academic</option>
                   <option value="Consortia" >Consortia</option>
@@ -404,8 +414,8 @@ function clearIdentity() {
                 </select>
               </div>
               <div class="form-group grpTwo">
-                <label for="usr">Sub-Market</label>
-                <select name="Sub_Market" id="control_COLUMN23" label="Sub-Market" class="form-control" required >
+                <label for="control_COLUMN23">Sub-Market <span class="parsley-required">*</span></label>
+                <select name="Sub_Market" id="control_COLUMN23" class="form-control selectpicker" required="" >
                   <option value="" selected>Select one</option>
                   <option value="Academic" >Academic</option>
                   <option value="Academic - Faculty" >Academic - Faculty</option>
@@ -509,8 +519,8 @@ function clearIdentity() {
                 </select>
               </div>
               <div class="form-group grpTwo">
-                <label for="usr">Country</label>
-                <select name="Country" id="control_COLUMN40" label="Country" class="form-control">
+                <label for="control_COLUMN40">Country</label>
+                <select name="Country" id="control_COLUMN40" class="form-control selectpicker">
                   <option value="" selected>Select one</option>
                   <option value="Afghanistan" >Afghanistan</option>
                   <option value="Algeria" >Algeria</option>
@@ -671,24 +681,25 @@ function clearIdentity() {
                 </select>
               </div>
               <div class="form-group grpTwo">
-                <label for="usr">State or Province</label>
-                <input type="text" name="State_Province" id="control_COLUMN44" label="State or Province" class="form-control" required="" value="">
+                <label for="control_COLUMN44">State or Province <span class="parsley-required">*</span></label>
+                <input type="text" name="State_Province" id="control_COLUMN44" class="form-control" required="" value="">
               </div>
 
+              <!-- Double Opt-in -->
               <div class="row">
                 <div class="col-xs-12">
                   <p>Privacy regulations require that we get your consent to continue to collect, store and use the personal information submitted for account creation or collected while using our services.</p>
                   <div class="form-group">
                     <p><span class="parsley-required">*</span>&nbsp;
                       <input type="checkbox" value="Yes" name="Double OptIn" required="" />
-                      I consent to the collection and use of my personal information consistent with the <a href="https://www.proquest.com/go/privacy" style="color:#333333; text-decoration:underline;" xt="SPCLICK" xtlinkname="httpswwwproquestcomgoprivacy" name="httpswwwproquestcomgoprivacy" xthyperlink="921340">Privacy Policy</a>. I&nbsp;acknowledge
-                      that use of the service is subject to the <a href="https://proquest.com/go/termsandconditions" style="color:#333333; text-decoration:underline;" xt="SPCLICK" xtlinkname="httpsproquestcomgotermsandconditions" name="httpsproquestcomgotermsandconditions" xthyperlink="921341">Terms & Conditions</a>.</p>
+                      I consent to the collection and use of my personal information consistent with the <a href="https://www.proquest.com/go/privacy" style="text-decoration: underline;" name="httpswwwproquestcomgoprivacy">Privacy Policy</a>.
+                      I&nbsp;acknowledge that use of the service is subject to the <a href="https://proquest.com/go/termsandconditions" style="text-decoration: underline;" name="httpsproquestcomgotermsandconditions">Terms & Conditions</a>.</p>
                   </div>
                 </div>
               </div>
 
               <div style="text-align: center;">
-                <p id="clear-identity-prompt" style="display: none;"><strong>Not you?</strong> Please <a href="#" style="color:#333333; text-decoration:underline" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
+                <p id="clear-identity-prompt" style="display: none;"><strong>Not you?</strong> Please <a href="#" style="text-decoration: underline" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
                 <input type="submit" class="btn btn-primary btn-lg" value="Submit">
               </div>
               
@@ -704,12 +715,12 @@ function clearIdentity() {
           </div>
         </div>
       </div>
-      <!--*********************** End Form Area ***********************--> 
+      <!--************************ End Form Area *************************-->
       
     </div>
   </div>
   
-  <!--*********************** Start OVERVIEW Area ***********************-->
+  <!--*********************** Start OVERVIEW Area ************************-->
   <div class="overview_part">
     <div class="container">
       <div class="col-md-12">
@@ -722,11 +733,11 @@ function clearIdentity() {
       </div>
     </div>
   </div>
-  <!--*********************** End OVERVIEW Area ***********************-->
-  
+  <!--************************ End OVERVIEW Area *************************-->
+
   <hr class="bb" />
-  
-  <!--*********************** Start BENEFITS Row-1 Area ***********************-->
+
+  <!--********************* Start BENEFITS Row-1 Area **********************-->
   <div class="benefit_part">
     <div class="container">
       <div class="col-md-12">
@@ -757,11 +768,11 @@ function clearIdentity() {
       </div>
     </div>
   </div>
-  <!--*********************** End BENEFITS Row-1 Area ***********************-->
-  
+  <!--********************** End BENEFITS Row-1 Area ***********************-->
+
   <p>&nbsp;</p>
-  
-  <!--*********************** Start BENEFITS Row-2 Area ***********************-->
+
+  <!--********************* Start BENEFITS Row-2 Area **********************-->
   <div class="benefit_part2">
     <div class="container">
       <div class="col-md-12">
@@ -786,10 +797,10 @@ function clearIdentity() {
       </div>
     </div>
   </div>
-  <!--*********************** End BENEFITS Row-2 Area ***********************-->
-  
+  <!--********************** End BENEFITS Row-2 Area ***********************-->
+
   <hr class="bb" />
-  
+
   <!--*********************** Start RESOURCES Area ***********************-->
   <div class="resource_part">
     <div class="container">
@@ -829,54 +840,54 @@ function clearIdentity() {
     </div>
   </div>
   <!--*********************** End RESOURCES Area ***********************--> 
-  
-<!-- ======== START Footer ======== -->
- 
-<div class="footer_one">
-    <div class="container">
-        <div class="col-md-12">
-            <div class="col-md-2 col-xs-6">
-                <div class="single_ft quicklinks">
-                    <h4>Navigation</h4><!--Navigation-->
-                    <a name="Footer_Navigation_Libraries" href="https://www.proquest.com/libraries">For Libraries</a><br>
-                    <a name="Footer_Navigation_Researchers" href="https://www.proquest.com/researchers">For Researchers</a><br>
-                    <a name="Footer_Navigation_ProductsServices" href="https://www.proquest.com/products-services">Products &amp; Services</a><br>
-                    <a name="Footer_Navigation_Customers" href="https://www.proquest.com/customer-care">For Customers</a><br>
-                    <a name="Footer_Navigation_Events" href="https://www.proquest.com/events">Events</a><br>
-                    <a name="Footer_Navigation_About" href="https://www.proquest.com/about">About</a><br>
-                    <a name="Footer_Navigation_Blogs" href="https://www.proquest.com/blog">Blogs</a>
-                </div>
-            </div>
-            <div class="col-md-2 col-xs-6">
-                <div class="single_ft quicklinks">
-                    <h4>Support</h4><!--Support-->
-                    <a name="Footer_Support_SupportCenter" href="https://www.proquest.com/company/support-landing.html">Support Center</a><br>
-                    <a name="Footer_Support_ToolsResources" href="https://www.proquest.com/customer-care/tools-resources/">Tools and Resources</a><br>
-                    <a name="Footer_Support_TrainingWebinars" href="https://www.proquest.com/customer-care/training-webinars/">Training Webinars</a><br>
-                    <a name="Footer_Support_LibGuides" href="https://proquest.libguides.com/home">LibGuides</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div><!-- /.footer_one -->
- 
-<!-- For the "Cookie Preferences" footer link - served by trustarc.com -->
-<script src="https://consent.trustarc.com/notice?domain=proquest.com&c=teconsent&js=nj&noticeType=bb&text=true" async="async" crossorigin=""></script>
- 
-<div class="main_footer">
-    <div class="container links col-xs-12">
-        <div style="text-align: center;">
-            <a name="BottomNav_Privacy" href="https://www.proquest.com/about/privacy-statement.html">Privacy</a>
-            <a name="BottomNav_TermsofUse" href="https://www.proquest.com/about/terms-and-conditions.html">Terms of Use</a>
-            <a name="BottomNav_Cookies" href="https://www.proquest.com/about/cookie-policy.html">Cookies</a>
-            <div id="teconsent" style="display: inline;"></div>
-            <a name="BottomNav_Accessibility" href="https://www.proquest.com/company/ProQuest-ADA-Compliance.html">Accessibility</a>
-            <a name="BottomNav_DMCAPolicy" href="https://media2.proquest.com/documents/dmcapolicy.pdf">DMCA Policy</a>
-        </div>
-    </div>
-</div><!-- /.main_footer -->
- 
-<!-- ======== END Footer ======== -->  
+
+  <!-- ======== START Footer ======== -->
+
+  <div class="footer_one">
+      <div class="container">
+          <div class="col-md-12">
+              <div class="col-md-2 col-xs-6">
+                  <div class="single_ft quicklinks">
+                      <h4>Navigation</h4><!--Navigation-->
+                      <a name="Footer_Navigation_Libraries" href="https://www.proquest.com/libraries">For Libraries</a><br>
+                      <a name="Footer_Navigation_Researchers" href="https://www.proquest.com/researchers">For Researchers</a><br>
+                      <a name="Footer_Navigation_ProductsServices" href="https://www.proquest.com/products-services">Products &amp; Services</a><br>
+                      <a name="Footer_Navigation_Customers" href="https://www.proquest.com/customer-care">For Customers</a><br>
+                      <a name="Footer_Navigation_Events" href="https://www.proquest.com/events">Events</a><br>
+                      <a name="Footer_Navigation_About" href="https://www.proquest.com/about">About</a><br>
+                      <a name="Footer_Navigation_Blogs" href="https://www.proquest.com/blog">Blogs</a>
+                  </div>
+              </div>
+              <div class="col-md-2 col-xs-6">
+                  <div class="single_ft quicklinks">
+                      <h4>Support</h4><!--Support-->
+                      <a name="Footer_Support_SupportCenter" href="https://www.proquest.com/company/support-landing.html">Support Center</a><br>
+                      <a name="Footer_Support_ToolsResources" href="https://www.proquest.com/customer-care/tools-resources/">Tools and Resources</a><br>
+                      <a name="Footer_Support_TrainingWebinars" href="https://www.proquest.com/customer-care/training-webinars/">Training Webinars</a><br>
+                      <a name="Footer_Support_LibGuides" href="https://proquest.libguides.com/home">LibGuides</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div><!-- /.footer_one -->
+
+  <!-- For the "Cookie Preferences" footer link - served by trustarc.com -->
+  <script src="https://consent.trustarc.com/notice?domain=proquest.com&c=teconsent&js=nj&noticeType=bb&text=true" async="async" crossorigin=""></script>
+
+  <div class="main_footer">
+      <div class="container links col-xs-12">
+          <div style="text-align: center;">
+              <a name="BottomNav_Privacy" href="https://www.proquest.com/about/privacy-statement.html">Privacy</a>
+              <a name="BottomNav_TermsofUse" href="https://www.proquest.com/about/terms-and-conditions.html">Terms of Use</a>
+              <a name="BottomNav_Cookies" href="https://www.proquest.com/about/cookie-policy.html">Cookies</a>
+              <div id="teconsent" style="display: inline;"></div>
+              <a name="BottomNav_Accessibility" href="https://www.proquest.com/company/ProQuest-ADA-Compliance.html">Accessibility</a>
+              <a name="BottomNav_DMCAPolicy" href="https://media2.proquest.com/documents/dmcapolicy.pdf">DMCA Policy</a>
+          </div>
+      </div>
+  </div><!-- /.main_footer -->
+
+  <!-- ======== END Footer ======== -->  
 </div>
 </body>
 
