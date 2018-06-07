@@ -41,7 +41,8 @@
     color: #ffffff;
     text-decoration: underline;
 }
-#email-warning {
+#email-warning,
+#clear-identity-prompt {
     display: none;
 }
 .pq-lead-text {
@@ -348,7 +349,10 @@ function displayProgressiveForm() {
 
             <div id="email-warning">
               <p class="pq-lead-text"><strong>For security purposes and protection of customer data, we have disabled the ability to edit your email address within this form.</strong></p>
-              <p style="font-size: 13px;">To update your email address, please register again by submitting a <a href="#" class="clear-identity-action" name="NewForm" xt="SPNOTRACK">new form</a>.</p>
+            </div>
+
+            <div id="clear-identity-prompt">
+              <p><strong>Not you?</strong> Please <a href="#" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
             </div>
 
             <div class="form-group">
@@ -370,6 +374,7 @@ function displayProgressiveForm() {
               <label for="control_ORGNAME">Organization Name <span class="parsley-required">*</span></label>
               <input type="text" name="Organization Name" id="control_ORGNAME" class="form-control" required="" value="">
             </div>
+<!--
             <div class="form-group grpOne">
               <label for="control_JOBFUNCTION">Job Function <span class="parsley-required">*</span></label>
               <select name="Job Function" id="control_JOBFUNCTION" class="form-control selectpicker" required="" >
@@ -419,6 +424,7 @@ function displayProgressiveForm() {
                 <option value="Other" >Other</option>
               </select>
             </div>
+-->
 
             <!-- Group 2 fields -->
             <div class="form-group grpTwo">
@@ -712,18 +718,22 @@ function displayProgressiveForm() {
               <div class="col-xs-12">
                 <p>Privacy regulations require that we get your consent to continue to collect, store and use the personal information submitted for account creation or collected while using our services.</p>
                 <div class="form-group">
-                  <p class="parsley-border"><span class="parsley-required">*</span>&nbsp;
+                  <label class="parsley-border" style="font-size: 14px;"><span class="parsley-required">*</span>&nbsp;
                     <input type="checkbox" name="Double OptIn" id="control_OPTIN" required="" value="Yes">
                     I consent to the collection and use of my personal information consistent with the <a href="https://www.proquest.com/go/privacy" name="httpswwwproquestcomgoprivacy">Privacy Policy</a>.
                     I&nbsp;acknowledge that use of the service is subject to the <a href="https://proquest.com/go/termsandconditions" name="httpsproquestcomgotermsandconditions">Terms & Conditions</a>.
-                  </p>
+                  </label>
                 </div>
               </div>
             </div>
 
-            <div style="text-align: center;">
-              <p id="clear-identity-prompt" style="display: none;"><strong>Not you?</strong> Please <a href="#" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
-              <input type="submit" class="btn btn-primary btn-lg" value="Submit">
+            <!-- Submit Button -->
+            <div class="row">
+              <div class="col-xs-12">
+                <div style="text-align: center;">
+                  <input type="submit" class="btn btn-primary btn-lg" value="Submit">
+                </div>
+              </div>
             </div>
             
             <!-- The "Lead Status" can be updated by changing the value="" -->
@@ -734,6 +744,7 @@ function displayProgressiveForm() {
 
             <input type="hidden" name="LastTouchLeadSourceDate" id="LastTouchLeadSourceDate" value="mm/dd/yyyy">
 
+            <!-- <input type="hidden" name="RECIPIENT_ID_*" value="-1">  <! for testing... -->
           </form>
         </div>
       </div>
