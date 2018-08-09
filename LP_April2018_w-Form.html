@@ -140,16 +140,17 @@ $( document ).ready(function() {
     // decide which form groups to display
     displayProgressiveForm();
 
-    // set the date for the "Last Touch Lead Source Date"
+    // set hidden fields to current date
     var today = new Date();
     var dd = today.getDate();
     var mm = today.getMonth() + 1;    // January is 0!
     var yyyy = today.getFullYear();
-
     if (dd < 10) { dd = '0'+dd };
     if (mm < 10) { mm = '0'+mm };
     today = mm+'/'+dd+'/'+yyyy;
-    $('#LastTouchLeadSourceDate').val(today);    // set hidden field for current date
+
+    $('#LastTouchLeadSourceDate').val(today);
+    $('#DoubleOptInDate').val(today);
 
     console.log('End Doc Ready.'); ////////////////
 
@@ -743,6 +744,7 @@ function displayProgressiveForm() {
             <input type="hidden" name="LastTouchLeadSource" id="LastTouchLeadSource" value="Targeted Email">
 
             <input type="hidden" name="LastTouchLeadSourceDate" id="LastTouchLeadSourceDate" value="mm/dd/yyyy">
+            <input type="hidden" name="Double OptIn Date" id="DoubleOptInDate" value="mm/dd/yyyy">
 
             <!-- <input type="hidden" name="RECIPIENT_ID_*" value="-1">  <! for testing... -->
           </form>
