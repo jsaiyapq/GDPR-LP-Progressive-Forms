@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ProQuest</title>
+
+<link rel="icon" type="image/x-icon" href="https://www.proquest.com/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Montserrat" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Slabo+27px" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Indie+Flower" />
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Dancing+Script:400,700" />
+<link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/IMC-style.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap-override-20140226.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/bootstrap-select.css" />
+<link rel="stylesheet" type="text/css" href="https://www.proquest.com/includes/print-stylesheet.css" media="print" />
+<style type="text/css">
+.parsley-border { /* must come before .parsley-error */
+    border: 2px solid transparent;
+}
+.parsley-error {
+    border: 2px solid #a51f1e;
+}
+.parsley-error:focus {
+    border: 2px solid #a51f1e;
+}
+.parsley-error-list {
+    color: #a51f1e;
+}
+.parsley-required {
+    color: #a51f1e;
+}
+.parsley-type {
+    color: #a51f1e;
+}
+#contact {
+    color: #ffffff;
+}
+#contact a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+#email-warning,
+#clear-identity-prompt {
+    display: none;
+}
+.pq-lead-text {
+    font-size: 16px;
+}
+.tooltip-inner {
+    max-width: 275px;
+    color: #a94442;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+}
+#contact .tooltip-arrow { /* id needed here for specificity */
+    border-top-color: #ebccd1;
+}
+.main_footer {
+    float: left;
+    width: 100%;
+    padding: 0;
+}
+.main_footer a {
+    color: white;
+}
+.main_footer .links {
+    padding: 5px 15px;
+}
+.main_footer .links a {
+    font-size: 12px;
+    padding: 5px;
+}
+a:hover, a:focus {
+    text-decoration: none;
+}
+</style>
+
+<!--[if IE]><script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<script src="https://www.sc.pages04.net/lp/static/js/iMAWebCookie.js?2aa8b034-139209dc9f9-6b01afd6fbb6724a9fe9ac1747b0e3f6&h=www.pages04.net" type="text/javascript"></script>
+<script src="https://www.proquest.com/includes/IMC-jquery-1.10.2.min.js"></script>
+<script src="https://www.proquest.com/includes/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.7.2/parsley.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
+<script>
+/*
+ * Document Ready function
+ */
+$( document ).ready(function() {
+
+    console.log('Begin Doc Ready.'); ////////////////
+
+    var myVar = setInterval(function() { myTimer(); }, 10);
+    function myTimer() {
+        if (typeof ewt != 'undefined') {
+            clearInterval(myVar);
+            ewt.init(); 
+            console.log('EWT Initialized'); ////////////////
+        } else {
+            console.log('Not Initialized'); ////////////////
+        }
+    }
+
+    // set up Parsley
+    $('#contact').parsley({ excluded: ':hidden', errorMessage: '', requiredMessage: '' });
+
+    // enable Bootstrap tooltip for email field
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // lock the email field
+    //  only if the hidden field with a recipient's ID is present
+    //  and there is content in the email field (allows us to enter a new email if something goes wrong)
+    if ( $('[name="RECIPIENT_ID_*"]').length && $('#control_EMAIL').val().length ) {
+
+        // show the email warning prompt
+        $('#email-warning').show();
+
+        // show the "Clear the form" prompt
+        $('#clear-identity-prompt').show();
+
+        // disable email field
+        $('#control_EMAIL').prop('disabled', 'disabled');
+
+        // do not require validation on disabled fields
+        $('#control_EMAIL').removeProp('required');
+
+    }
+
+    // enable email field before submitting form, otherwise value will not be sent
+    $('#contact').submit(function() {
+        $('#control_EMAIL').prop('disabled', false);
+    });
+
+    // set any element with the class "clear-identity-action" to call the clearing function when clicked
+    $('.clear-identity-action').click(function() {
+        clearIdentity();
+    });
+
+    // set hidden fields to current date
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1;    // January is 0!
+    var yyyy = today.getFullYear();
+    if (dd < 10) { dd = '0'+dd };
+    if (mm < 10) { mm = '0'+mm };
+    today = mm+'/'+dd+'/'+yyyy;
+
+    $('#LastTouchLeadSourceDate').val(today);
+    $('#DoubleOptInDate').val(today);
+
+    console.log('End Doc Ready.'); ////////////////
+
+});
+
+/*
+ * Function to clear the contact form and hidden recipient id field
+ *  This is called from any link or button in the page with the class "clear-identity-action"
+ */
+function clearIdentity() {
+
+    // remove the recipient id field
+    //  to make sure it does not get sent with the new record
+    $('[name="RECIPIENT_ID_*"]').remove();
+
+    // clear the form fields
+    $('#contact').clearForm();  // (from jquery.form.js)
+
+    // remove Parsley error borders
+    $('#contact').parsley().reset();
+
+    // hide the email warning prompt
+    $('#email-warning').hide();
+
+    // hide the "Clear the form" prompt
+    $('#clear-identity-prompt').hide();
+
+    // enable email field
+    $('#control_EMAIL').prop('disabled', false);
+
+    // require an email address
+    $('#control_EMAIL').prop('required', 'required');
+
+    $('#control_EMAIL').focus();
+
+}
+</script>
+</head>
+
+<body>
+
+<!--***************************** Start Header ******************************-->
+<div class="header-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button aria-expanded="false" data-target="#navbar-collapse-1" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar">&nbsp;</span>
+                <span class="icon-bar">&nbsp;</span>
+                <span class="icon-bar">&nbsp;</span>
+              </button>
+            </div><!-- /.navbar-header -->
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="navbar-collapse-1" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li><a name="TopNav_SupportCenter" href="https://www.proquest.com/company/support-landing.html">Support Center |</a></li>
+                <li><a name="TopNavNews" href="https://www.proquest.com/about/news/">News |</a></li>
+                <li><a name="TopNav_Contact" href="https://www.proquest.com/contact/contact-landing.html">Contact</a></li>
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
+      </div>
+    </div>
+  </div>
+</div><!-- /.header-area -->
+
+<div class="proquest_part">
+  <div class="container">
+    <div class="col-md-12">
+      <div class="inner_proquest" style="padding: 10px;">
+        <a href="https://www.proquest.com" target="_blank" name="Top_PQ_Logo">
+          <img src="LandingPage_updatedlogo_0.png" alt="ProQuest" class="img-responsive" width="169" height="66" />
+        </a>
+      </div>
+    </div>
+  </div>
+</div><!-- /.proquest_part -->
+<!--****************************** End Header *******************************-->
+
+<!--*************************** Start Hero Image ****************************-->
+<div class="overview_part">
+  <div class="container">
+    <div class="col-md-12">
+      <div class="left_overview">
+        <img src="demobanner_1140x380.jpg" alt="" class="img-responsive" width="1140" height="380" />
+        <h3 style="font-weight: bold;">Landing Page title: Keep under 15 words, simple, easy to read and scan.</h3>
+      </div>
+    </div>
+  </div>
+</div><!-- /.overview_part -->
+<!--**************************** End Hero Image *****************************-->
+
+<div class="background_part">
+
+  <!--************************ Start MAIN Area **************************-->
+  <div class="container">
+
+    <!--******************* Start Summary Copy ********************-->
+    <div class="col-md-5" style="margin-top: 15px;">
+      <div class="right-content-parts">
+        <p>Overview and reinforcement of landing page goes here.</p>
+        <p>Supporting copy, preview of content, etc. will go here. Additional sections and changes can be made. In the source code, look for the section labeled <span style="color: red;">"Start Summary Copy"</span>.  There will be separate paragraph tags within each different block of copy.</p>
+        <p>A bullet list is included to help break up the eye from lots of copy. To remove this list, look for the &lt;ul&gt; element in the source code in the section labeled <span style="color: red;">"Start Summary Copy"</span> and remove the starting &lt;ul&gt; tag to the ending &lt;/ul&gt; tag.</p>
+        <ul style="font-size:20px; color:#222222;">
+          <li>&bull; Placeholder for bullet item 1</li>
+          <li>&bull; Placeholder for bullet item 2</li>
+          <li>&bull; Placeholder for bullet item 3</li>
+        </ul>
+        <p>This is a great place to add in some final content or text before the CTA button.</p>
+      </div>
+      <!--******************* Start CTA Copy ********************-->
+      <p><em style="font-size: 15px; color: red;">If the CTA button isn't needed, look for the section labeled "Start CTA Copy", and remove from "Start CTA Copy" to "End CTA Copy" comments.</em></p>
+      <div>
+        <a href="http://www.example.com" style="background-color:#00A0DF;border:1px solid #00A0DF;border-radius:4px;color:#ffffff;display:inline-block;font-family:'Open Sans', Arial; font-size:18px;font-weight:normal;line-height:80px;text-align:center;text-decoration:none;width:350px;-webkit-text-size-adjust:none;mso-hide:all;">Use this CTA button if it makes sense!</a>
+      </div>
+      <!--******************** End CTA Copy *********************-->
+    </div>
+    <!--******************** End Summary Copy *********************-->
+
+    <!--******************** Start Form Area **********************-->
+    <div class="col-md-6 col-md-offset-1">
+      <div class="left-contact-form">
+        <div class="contact-forms">
+          <h3 class="text-center">Echo CTA here, but avoid any "below" language.</h3>
+
+          <form id="contact" name="contact" method="post" class="pq-contact" autocomplete="off">
+            <!-- Autocomplete set to "off" for compatibility workaround for Firefox. -->
+
+            <div id="email-warning">
+              <p class="pq-lead-text"><strong>For security purposes and protection of customer data, we have disabled the ability to edit your email address within this form.</strong></p>
+            </div>
+
+            <div id="clear-identity-prompt">
+              <p><strong>Not you?</strong> Please <a href="#" class="clear-identity-action" name="ClearForm" xt="SPNOTRACK">clear the form</a> before submitting.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="control_EMAIL">Email <span class="parsley-required">*</span></label>
+              <input type="text" name="Email" id="control_EMAIL" class="form-control" required="" data-toggle="tooltip" data-placement="top"
+                title="For security purposes and protection of customer data, you will not be able to change your email address once you subscribe.">
+            </div>
+            <div class="form-group">
+              <label for="control_FIRSTNAME">First Name <span class="parsley-required">*</span></label>
+              <input type="text" name="First Name" id="control_FIRSTNAME" class="form-control" required="" value="">
+            </div>
+            <div class="form-group">
+              <label for="control_LASTNAME">Last Name <span class="parsley-required">*</span></label>
+              <input type="text" name="Last Name" id="control_LASTNAME" class="form-control" required="" value="">
+            </div>
+            <div class="form-group">
+              <label for="control_ORGNAME">Organization Name <span class="parsley-required">*</span></label>
+              <input type="text" name="Organization Name" id="control_ORGNAME" class="form-control" required="" value="">
+            </div>
+<!--
+            <div class="form-group grpOne">
+              <label for="control_JOBFUNCTION">Job Function <span class="parsley-required">*</span></label>
+              <select name="Job Function" id="control_JOBFUNCTION" class="form-control selectpicker" required="" >
+                <option value="" selected>Select one</option>
+                <option value="Academic/Faculty/Teacher/Instructor" >Academic/Faculty/Teacher/Instructor</option>
+                <option value="Academic Dept Chair/Dean/Director (Not Librarian)" >Academic Dept Chair/Dean/Director (Not Librarian)</option>
+                <option value="Accounting/Finance" >Accounting/Finance</option>
+                <option value="Acquisitions/Procurement" >Acquisitions/Procurement</option>
+                <option value="Administration" >Administration</option>
+                <option value="Archivist/Curator" >Archivist/Curator</option>
+                <option value="Author/Content Manager/Editor" >Author/Content Manager/Editor</option>
+                <option value="Automation Librarian" >Automation Librarian</option>
+                <option value="Cataloger/Document Manager" >Cataloger/Document Manager</option>
+                <option value="Collections Development" >Collections Development</option>
+                <option value="Consortia Board Member/Employee" >Consortia Board Member/Employee</option>
+                <option value="Corporate" >Corporate</option>
+                <option value="Curriculum/Education Director" >Curriculum/Education Director</option>
+                <option value="Distributor" >Distributor</option>
+                <option value="Electronic Resources" >Electronic Resources</option>
+                <option value="Engineer" >Engineer</option>
+                <option value="Executive" >Executive</option>
+                <option value="Genealogist" >Genealogist</option>
+                <option value="General Counsel/Patents/Paralegal" >General Counsel/Patents/Paralegal</option>
+                <option value="General Reference Librarian" >General Reference Librarian</option>
+                <option value="Grad Dean /Director/Provost" >Grad Dean /Director/Provost</option>
+                <option value="Grants/Funding" >Grants/Funding</option>
+                <option value="Information Professional" >Information Professional</option>
+                <option value="Information Services Librarian" >Information Services Librarian</option>
+                <option value="Instructional Librarian" >Instructional Librarian</option>
+                <option value="IT/Systems/Network Administrator" >IT/Systems/Network Administrator</option>
+                <option value="K12/School Teacher" >K12/School Teachern</option>
+                <option value="K12 Librarian/Media Specialist/District Librarian" >K12 Librarian/Media Specialist/District Librarian</option>
+                <option value="Librarian (Other)" >Librarian (Other)</option>
+                <option value="Library Director" >Library Director</option>
+                <option value="Library Senior Leader" >Library Senior Leader</option>
+                <option value="Media Librarian" >Media Librarian</option>
+                <option value="Periodicals/Serials Librarian" >Periodicals/Serials Librarian</option>
+                <option value="PQ Employee" >PQ Employee</option>
+                <option value="Principal/Headmaster" >Principal/Headmaster</option>
+                <option value="Public Services Librarian" >Public Services Librarian</option>
+                <option value="Research Support Librarian" >Research Support Librarian</option>
+                <option value="Student/Researcher" >Student/Researcher</option>
+                <option value="Subject Bibliographer/Selector/Liaison" >Subject Bibliographer/Selector/Liaison</option>
+                <option value="Superintendent/Overseer" >Superintendent/Overseer</option>
+                <option value="University Librarian" >University Librarian</option>
+                <option value="Youth/Teen Librarian" >Youth/Teen Librarian</option>
+                <option value="Other" >Other</option>
+              </select>
+            </div>
+-->
+            <div class="form-group">
+              <label for="control_MARKET">Market <span class="parsley-required">*</span></label>
+              <select name="Market" id="control_MARKET" class="form-control selectpicker" required="" >
+                <option value="" selected>Select one</option>
+                <option value="Academic" >Academic</option>
+                <option value="Consortia" >Consortia</option>
+                <option value="Corporate" >Corporate</option>
+                <option value="Government" >Government</option>
+                <option value="Individual" >Individual</option>
+                <option value="Public Library" >Public Library</option>
+                <option value="Schools" >Schools</option>
+                <option value="Other" >Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="control_SUBMARKET">Sub-Market <span class="parsley-required">*</span></label>
+              <select name="Sub_Market" id="control_SUBMARKET" class="form-control selectpicker" required="" >
+                <option value="" selected>Select one</option>
+                <option value="Academic" >Academic</option>
+                <option value="Academic - Faculty" >Academic - Faculty</option>
+                <option value="Academic - Student" >Academic - Student</option>
+                <option value="Academic - Tribal" >Academic - Tribal</option>
+                <option value="Administrative Services">Administrative Services</option>
+                <option value="Agriculture & Forestry" >Agriculture & Forestry</option>
+                <option value="Air Transportation" >Air Transportation</option>
+                <option value="Arts, Entertainment & Recreation" >Arts, Entertainment & Recreation</option>
+                <option value="Associates College" >Associates College</option>
+                <option value="Baccalaureate Colleges General" >Baccalaureate Colleges General</option>
+                <option value="Bacc Associates College" >Bacc Associates College</option>
+                <option value="Bacc Colleges Liberal Arts" >Bacc Colleges Liberal Arts</option>
+                <option value="Banking" >Banking</option>
+                <option value="Biomedical" >Biomedical</option>
+                <option value="Biotechnology" >Biotechnology</option>
+                <option value="Bookstore" >Bookstore</option>
+                <option value="Branch" >Branch</option>
+                <option value="Central/Federal" >Central/Federal</option>
+                <option value="Chemical Manufacturing" >Chemical Manufacturing</option>
+                <option value="Combined School - Private" >Combined School - Private</option>
+                <option value="Combined School - Public" >Combined School - Public</option>
+                <option value="Construction" >Construction</option>
+                <option value="Cooperative" >Cooperative</option>
+                <option value="Doct Research Univ Extensive" >Doct Research Univ Extensive</option>
+                <option value="Doct Research Univ Intensive" >Doct Research Univ Intensive</option>
+                <option value="Educational Services" >Educational Services</option>
+                <option value="Elementary School - Private" >Elementary School - Private</option>
+                <option value="Elementary School - Public" >Elementary School - Public</option>
+                <option value="Embassies" >Embassies</option>
+                <option value="Financial Services" >Financial Services</option>
+                <option value="Food Processing" >Food Processing</option>
+                <option value="Further Education" >Further Education</option>
+                <option value="Genealogy" >Genealogy</option>
+                <option value="Government" >Government</option>
+                <option value="Health" >Health</option>
+                <option value="High School - Private" >High School - Private</option>
+                <option value="High School - Public" >High School - Public</option>
+                <option value="Historical Societies" >Historical Societies</option>
+                <option value="Hospitals" >Hospitals</option>
+                <option value="Insurance" >Insurance</option>
+                <option value="International Baccalaureate" >International Baccalaureate</option>
+                <option value="Legal Services" >Legal Services</option>
+                <option value="Local" >Local</option>
+                <option value="Main" >Main</option>
+                <option value="Management Services" >Management Services</option>
+                <option value="Manufacturing" >Manufacturing</option>
+                <option value="Masters Colleges and Univ I" >Masters Colleges and Univ I</option>
+                <option value="Masters Colleges and Univ II" >Masters Colleges and Univ II</option>
+                <option value="Medical Schools and Centers" >Medical Schools and Centers</option>
+                <option value="Metal Mining" >Metal Mining</option>
+                <option value="Middle School - Private" >Middle School - Private</option>
+                <option value="Middle School - Public" >Middle School - Public</option>
+                <option value="Military" >Military</option>
+                <option value="Mining" >Mining</option>
+                <option value="Mixed Market" >Mixed Market</option>
+                <option value="Motor Vehicle Manufacturing" >Motor Vehicle Manufacturing</option>
+                <option value="Museums, Historical Sites & Similar Inst" >Museums, Historical Sites & Similar Inst</option>
+                <option value="National" >National</option>
+                <option value="National Library" >National Library</option>
+                <option value="Non-Academic" >Non-Academic</option>
+                <option value="Non-PHD Granting" >Non-PHD Granting</option>
+                <option value="Other" >Other</option>
+                <option value="Other Health Profession School" >Other Health Profession School</option>
+                <option value="Other Information Services" >Other Information Services</option>
+                <option value="Other Specialized Institutions" >Other Specialized Institutions</option>
+                <option value="Personal & Household Products" >Personal & Household Products</option>
+                <option value="Petroleum Industry" >Petroleum Industry</option>
+                <option value="Pharmaceutical" >Pharmaceutical</option>
+                <option value="PHD Granting" >PHD Granting</option>
+                <option value="Primary" >Primary</option>
+                <option value="Professional Services" >Professional Services</option>
+                <option value="Public Library" >Public Library</option>
+                <option value="Publishing" >Publishing</option>
+                <option value="Real Estate" >Real Estate</option>
+                <option value="Religious, Grantmaking, Civic & Similar Orgs" >Religious, Grantmaking, Civic & Similar Orgs</option>
+                <option value="Research Services" >Research Services</option>
+                <option value="Retail Trade - Not Bookstore" >Retail Trade - Not Bookstore</option>
+                <option value="School District" >School District</option>
+                <option value="School of Art & Music & Design" >School of Art & Music & Design</option>
+                <option value="Schools" >Schools</option>
+                <option value="Schools-Leads" >Schools-Leads</option>
+                <option value="Schools of Business & Mgmt" >Schools of Business & Mgmt</option>
+                <option value="Schools of Engineering & Tech" >Schools of Engineering & Tech</option>
+                <option value="Schools of Law" >Schools of Law</option>
+                <option value="Secondary" >Secondary</option>
+                <option value="Social Assistance" >Social Assistance</option>
+                <option value="Space Research & Technology" >Space Research & Technology</option>
+                <option value="State" >State</option>
+                <option value="State/Provincial" >State/Provincial</option>
+                <option value="System" >System</option>
+                <option value="Teachers College" >Teachers College</option>
+                <option value="Theol & Other Faith Seminaries" >Theol & Other Faith Seminaries</option>
+                <option value="Transportation & Warehousing" >Transportation & Warehousing</option>
+                <option value="Tribal Colleges & Universities" >Tribal Colleges & Universities</option>
+                <option value="Unclassified" >Unclassified</option>
+                <option value="USIS/USIA" >USIS/USIA</option>
+                <option value="Utilities" >Utilities</option>
+                <option value="VAMCs" >VAMCs</option>
+                <option value="Wholesale Trade" >Wholesale Trade</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="control_COUNTRY">Country</label>
+              <select name="Country" id="control_COUNTRY" class="form-control selectpicker">
+                <option value="" selected>Select one</option>
+                <option value="Afghanistan" >Afghanistan</option>
+                <option value="Algeria" >Algeria</option>
+                <option value="Antigua and Barbuda" >Antigua and Barbuda</option>
+                <option value="Argentina" >Argentina</option>
+                <option value="Aruba" >Aruba</option>
+                <option value="Australia" >Australia</option>
+                <option value="Austria" >Austria</option>
+                <option value="Bahamas" >Bahamas</option>
+                <option value="Bahrain" >Bahrain</option>
+                <option value="Bangladesh" >Bangladesh</option>
+                <option value="Barbados" >Barbados</option>
+                <option value="Belgium" >Belgium</option>
+                <option value="Belize" >Belize</option>
+                <option value="Bermuda" >Bermuda</option>
+                <option value="Bhutan" >Bhutan</option>
+                <option value="Bolivia, Plurinational State of" >Bolivia, Plurinational State of</option>
+                <option value="Bonaire, Sint Eustatius and Saba" >Bonaire, Sint Eustatius and Saba</option>
+                <option value="Botswana" >Botswana</option>
+                <option value="Brazil" >Brazil</option>
+                <option value="Bulgaria" >Bulgaria</option>
+                <option value="Afghanistan" >Afghanistan</option>
+                <option value="Cambodia" >Cambodia</option>
+                <option value="Canada" >Canada</option>
+                <option value="Cayman Islands" >Cayman Islands</option>
+                <option value="Chile" >Chile</option>
+                <option value="China" >China</option>
+                <option value="Colombia" >Colombia</option>
+                <option value="Congo" >Congo</option>
+                <option value="Congo, The Democratic Republic of the" >Congo, The Democratic Republic of the</option>
+                <option value="Costa Rica" >Costa Rica</option>
+                <option value="Cote d'Ivoire" >Cote d'Ivoire</option>
+                <option value="Croatia" >Croatia</option>
+                <option value="Cuba" >Cuba</option>
+                <option value="Curacao" >Curacao</option>
+                <option value="Cyprus" >Cyprus</option>
+                <option value="Czech Republic" >Czech Republic</option>
+                <option value="Denmark" >Denmark</option>
+                <option value="Dominica" >Dominica</option>
+                <option value="Dominican Republic" >Dominican Republic</option>
+                <option value="Ecuador" >Ecuador</option>
+                <option value="Egypt" >Egypt</option>
+                <option value="El Salvador" >El Salvador</option>
+                <option value="Estonia" >Estonia</option>
+                <option value="Falkland Islands (Malvinas)" >Falkland Islands (Malvinas)</option>
+                <option value="Fiji" >Fiji</option>
+                <option value="Finland" >Finland</option>
+                <option value="France" >France</option>
+                <option value="Gambia" >Gambia</option>
+                <option value="Georgia" >Georgia</option>
+                <option value="Germany" >Germany</option>
+                <option value="Ghana" >Ghana</option>
+                <option value="Gibraltar" >Gibraltar</option>
+                <option value="Greece" >Greece</option>
+                <!-- -->
+                <option value="Grenada" >Grenada</option>
+                <option value="Guam" >Guam</option>
+                <option value="Guatemala" >Guatemala</option>
+                <option value="Guyana" >Guyana</option>
+                <option value="Haiti" >Haiti</option>
+                <option value="Honduras" >Honduras</option>
+                <option value="Hong Kong" >Hong Kong</option>
+                <option value="Hungary" >Hungary</option>
+                <option value="Iceland" >Iceland</option>
+                <option value="India" >India</option>
+                <option value="Indonesia" >Indonesia</option>
+                <option value="Iran, Islamic Republic of" >Iran, Islamic Republic of</option>
+                <option value="Iraq" >Iraq</option>
+                <option value="Ireland" >Ireland</option>
+                <option value="Israel" >Israel</option>
+                <option value="Italy" >Italy</option>
+                <option value="Jamaica" >Jamaica</option>
+                <option value="Japan" >Japan</option>
+                <option value="Jordan" >Jordan</option>
+                <option value="Kazakhstan" >Kazakhstan</option>
+                <option value="Kenya" >Kenya</option>
+                <option value="Korea, North" >Korea, North</option>
+                <option value="Korea, South" >Korea, South</option>
+                <option value="Kuwait" >Kuwait</option>
+                <option value="Kyrgyzstan" >Kyrgyzstan</option>
+                <option value="Latvia" >Latvia</option>
+                <option value="Lebanon" >Lebanon</option>
+                <option value="Lithuania" >Lithuania</option>
+                <option value="Luxembourg" >Luxembourg</option>
+                <option value="Macao" >Macao</option>
+                <option value="Malaysia" >Malaysia</option>
+                <option value="Malta" >Malta</option>
+                <option value="Mauritius" >Mauritius</option>
+                <option value="Mexico" >Mexico</option>
+                <option value="Mongolia" >Mongolia</option>
+                <option value="Montserrat" >Montserrat</option>
+                <option value="Mozambique" >Mozambique</option>
+                <option value="Namibia" >Namibia</option>
+                <option value="Nepal" >Nepal</option>
+                <option value="Netherlands" >Netherlands</option>
+                <option value="New Zealand" >New Zealand</option>
+                <option value="Nicaragua" >Nicaragua</option>
+                <option value="Nigeria" >Nigeria</option>
+                <option value="Norway" >Norway</option>
+                <option value="Occupied Palestinian Territory" >Occupied Palestinian Territory</option>
+                <option value="Oman" >Oman</option>
+                <option value="Pakistan" >Pakistan</option>
+                <option value="Panama" >Panama</option>
+                <option value="Papua New Guinea" >Papua New Guinea</option>
+                <option value="Paraguay" >Paraguay</option>
+                <option value="Peru" >Peru</option>
+                <option value="Philippines" >Philippines</option>
+                <option value="Poland" >Poland</option>
+                <option value="Portugal" >Portugal</option>
+                <option value="Puerto Rico" >Puerto Rico</option>
+                <option value="Qatar" >Qatar</option>
+                <option value="Romania" >Romania</option>
+                <option value="Russian Federation" >Russian Federation</option>
+                <option value="Rwanda" >Rwanda</option>
+                <option value="Saint Helena, Ascension and Tristan da Cunha" >Saint Helena, Ascension and Tristan da Cunha</option>
+                <option value="Saint Kitts and Nevis" >Saint Kitts and Nevis</option>
+                <option value="Saint Lucia" >Saint Lucia</option>
+                <option value="Saint Martin (French part)" >Saint Martin (French part)</option>
+                <option value="Saint Pierre and Miquelon" >Saint Pierre and Miquelon</option>
+                <option value="Saint Vincent and The Grenadines" >Saint Vincent and The Grenadines</option>
+                <option value="Saudi Arabia" >Saudi Arabia</option>
+                <option value="Serbia" >Serbia</option>
+                <option value="Singapore" >Singapore</option>
+                <option value="Sint Maarten (Dutch part)" >Sint Maarten (Dutch part)</option>
+                <option value="Slovakia" >Slovakia</option>
+                <option value="Slovenia" >Slovenia</option>
+                <option value="South Africa" >South Africa</option>
+                <option value="South Georgia and the South Sandwich Islands" >South Georgia and the South Sandwich Islands</option>
+                <option value="Spain" >Spain</option>
+                <option value="Sri Lanka" >Sri Lanka</option>
+                <option value="Suriname" >Suriname</option>
+                <option value="Sweden" >Sweden</option>
+                <option value="Switzerland" >Switzerland</option>
+                <option value="Syrian Arab Republic" >Syrian Arab Republic</option>
+                <option value="Taiwan, Province of China" >Taiwan, Province of China</option>
+                <option value="Tanzania, United Republic of" >Tanzania, United Republic of</option>
+                <option value="Thailand" >Thailand</option>
+                <option value="Trinidad and Tobago" >Trinidad and Tobago</option>
+                <option value="Tunisia" >Tunisia</option>
+                <option value="Turkey" >Turkey</option>
+                <option value="Turkmenistan" >Turkmenistan</option>
+                <option value="Tuvalu" >Tuvalu</option>
+                <option value="Uganda" >Uganda</option>
+                <option value="Ukraine" >Ukraine</option>
+                <option value="United Arab Emirates" >United Arab Emirates</option>
+                <option value="United Kingdom" >United Kingdom</option>
+                <option value="United States" >United States</option>
+                <option value="United States Minor Outlying Islands" >United States Minor Outlying Islands</option>
+                <option value="Uruguay" >Uruguay</option>
+                <option value="Uzbekistan" >Uzbekistan</option>
+                <option value="Vanuatu" >Vanuatu</option>
+                <option value="Venezuela, Bolivarian Republic of" >Venezuela, Bolivarian Republic of</option>
+                <option value="Vietnam" >Vietnam</option>
+                <option value="Virgin Islands, British" >Virgin Islands, British</option>
+                <option value="Virgin Islands, U.S." >Virgin Islands, U.S.</option>
+                <option value="Zambia" >Zambia</option>
+                <option value="Zimbabwe" >Zimbabwe</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="control_STATE">State or Province</label>
+              <input type="text" name="State_Province" id="control_STATE" class="form-control" value="">
+            </div>
+
+            <!-- Double Opt-in -->
+            <div class="row">
+              <div class="col-xs-12">
+                <p>Privacy regulations require that we get your consent to continue to collect, store and use the personal information submitted for account creation or collected while using our services.</p>
+                <div class="form-group">
+                  <label class="parsley-border" style="font-size: 14px;"><span class="parsley-required">*</span>&nbsp;
+                    <input type="checkbox" name="Double OptIn" id="control_OPTIN" required="" value="Yes">
+                    I consent to the collection and use of my personal information consistent with the <a href="https://www.proquest.com/go/privacy" name="httpswwwproquestcomgoprivacy">Privacy Policy</a>.
+                    I&nbsp;acknowledge that use of the service is subject to the <a href="https://proquest.com/go/termsandconditions" name="httpsproquestcomgotermsandconditions">Terms & Conditions</a>.
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="row">
+              <div class="col-xs-12">
+                <div style="text-align: center;">
+                  <input type="submit" class="btn btn-primary btn-lg" value="Submit">
+                </div>
+              </div>
+            </div>
+            
+            <!-- The "Lead Status" can be updated by changing the value="" -->
+            <input type="hidden" name="Lead Status" value="Open-Marketing Visitor">
+
+            <!-- The "Last Touch Lead Source" can be updated by changing the value="" -->
+            <input type="hidden" name="LastTouchLeadSource" id="LastTouchLeadSource" value="Targeted Email">
+
+            <input type="hidden" name="LastTouchLeadSourceDate" id="LastTouchLeadSourceDate" value="mm/dd/yyyy">
+            <input type="hidden" name="Double OptIn Date" id="DoubleOptInDate" value="mm/dd/yyyy">
+
+            <!-- <input type="hidden" name="RECIPIENT_ID_*" value="-1">  <! for testing... -->
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--********************* End Form Area ***********************-->
+
+  </div>
+  <!--************************* End MAIN Area ***************************-->
+
+  <!--********************** Start OVERVIEW Area ************************-->
+  <div class="overview_part">
+    <div class="container">
+      <div class="col-md-12">
+        <div class="left_overview">
+          <h3>Overview</h3>
+          <p>To make edits to or remove the Overview section, look for the section labeled <span style="color: red;">"Start OVERVIEW Area"</span> in the source code.  To remove entirely, highlight from the Start comment through the Finish comment and delete.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--*********************** End OVERVIEW Area *************************-->
+
+  <!--******************* Start BENEFITS Row-1 Area *********************-->
+  <hr class="bb" />
+
+  <div class="benefit_part">
+    <div class="container">
+      <div class="col-md-12">
+        <div class="left_overview">
+          <h3>Benefits</h3>
+          <p style="font-size: 18px;">If you need to add additional lines of benefits/highlights, look for the area labeled <span style="color: red;">"Start BENEFITS Row-2 Area"</span>.  You will want to copy and paste from this comment <strong>THROUGH THE END OF</strong> <span style="color: red;">"End BENEFITS Row-2 Area"</span>, and simply delete any extra content.  To delete the unnecessary content, you will highlight and delete the code for each section within its div tags.<br>
+            <br>
+            <em style="font-size: 16px; color: red;">Please delete this entire section if not needed for your landing page.  Look for the paragraph tags under the "Benefits" in the source code and delete.</em>
+          </p>
+        </div>
+        <div class="col-md-4">
+          <div class="single_benefit"><img src="LP_Benefits_Placeholder_180x325_1.png" class="img-responsive" name="LP_Benefits_Placeholder_180x325_1.png" width="325" height="180" alt="" />
+            <h4>Benefit One Title</h4>
+            <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Start BENEFITS Row-1 Area"</span> in the source code.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="single_benefit"><img src="LP_Benefits_Placeholder_180x325_1.png" class="img-responsive" name="LP_Benefits_Placeholder_180x325_1.png" width="325" height="180" alt="" />
+            <h4>Benefit Two Title</h4>
+            <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Start BENEFITS Row-1 Area"</span> in the source code.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="single_benefit"><img src="LP_Benefits_Placeholder_180x325_1.png" class="img-responsive" name="LP_Benefits_Placeholder_180x325_1.png" width="325" height="180" alt="" />
+            <h4>Benefit Three Title</h4>
+            <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Start BENEFITS Row-1 Area"</span> in the source code.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--******************** End BENEFITS Row-1 Area **********************-->
+
+  <!--******************* Start BENEFITS Row-2 Area *********************-->
+  <p>&nbsp;</p>
+
+  <div class="benefit_part2">
+    <div class="container">
+      <div class="col-md-12">
+        <div class="col-md-4">
+          <div class="single_benefit"><img src="LP_Benefits_Placeholder_180x325_1.png" class="img-responsive" name="LP_Benefits_Placeholder_180x325_1.png" width="325" height="180" alt="" />
+            <h4>Benefit Four Title</h4>
+            <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Start BENEFITS Row-2 Area"</span> in the source code.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="single_benefit"><img src="LP_Benefits_Placeholder_180x325_1.png" class="img-responsive" name="LP_Benefits_Placeholder_180x325_1.png" width="325" height="180" alt="" />
+            <h4>Benefit Five Title</h4>
+            <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Start BENEFITS Row-2 Area"</span> in the source code.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="single_benefit"><img src="LP_Benefits_Placeholder_180x325_1.png" class="img-responsive" name="LP_Benefits_Placeholder_180x325_1.png" width="325" height="180" alt="" />
+            <h4>Benefit Six Title</h4>
+            <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Start BENEFITS Row-2 Area"</span> in the source code.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--******************** End BENEFITS Row-2 Area **********************-->
+
+  <!--********************** Start RESOURCES Area ***********************-->
+  <hr class="bb" />
+
+  <div class="resource_part">
+    <div class="container">
+      <div class="col-md-12">
+        <div class="left_overview">
+          <h3>Resources</h3>
+          <p style="font-size: 18px;">If you need to add additional lines of resources/highlights, look for the area labeled <span style="color: red;">"Row-1"</span>.  You will want to copy and paste from this comment <strong>THROUGH THE END OF</strong> <span style="color: red;">"End RESOURCES Area"</span>, and simply delete any extra content.  To delete the unnecessary content, you will highlight and delete the code as shown in the below image for that section.<br>
+            <br>
+            <em style="font-size: 16px; color: red;">Please delete this entire section if not needed for your landing page.  Look for "Start RESOURCES Area" in the source code and delete through "End RESOURCES Area".</em>
+          </p>
+        </div>
+        <!--********************* Row-1 ***********************-->
+        <div class="row">
+          <div class="col-md-3">
+            <div class="left_resorce" style="margin-top: 10px;"><img src="LP_Resources_Placeholder_125x210_1.png" class="img-responsive" name="LP_Resources_Placeholder_125x210_1.png" width="210" height="125" alt="" /></div>
+          </div>
+          <div class="col-md-7">
+            <div class="right_resorce">
+              <h4>Resource Highlight 1</h4>
+              <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Row-1"</span> in the source code.</p>
+              <a href="http://go.proquest.com/EmailSignUpLeadSource/LPT.url?kn=833964&vs=OTM5MDZiNDctZTAxNC00N2Q3LWE5ZDQtZjYyYTZmNjljYzU5OzsS1" xtlinkname="Resources_Link1" name="Resources_Link1" xt="SPCLICKSTREAM" class="Access" onclick="return ewt.trackLink({name:'TOFU-BL',type:'click',link:this});" style="color: #009EDF;">Access Support Center</a></div>
+          </div>
+        </div>
+        <br />
+        <!--********************* Row-2 ***********************-->
+        <div class="row">
+          <div class="col-md-3">
+            <div class="left_resorce" style="margin-top: 10px;"><img src="LP_Resources_Placeholder_125x210_1.png" class="img-responsive" name="LP_Resources_Placeholder_125x210_1.png" width="210" height="125" alt="" /></div>
+          </div>
+          <div class="col-md-7">
+            <div class="right_resorce">
+              <h4>Resource Highlight 2</h4>
+              <p>Concise description of above benefit or highlight. To make edits to this area, look for the area labeled <span style="color: red;">"Row-2"</span> in the source code.</p>
+              <a href="http://go.proquest.com/EmailSignUpLeadSource/LPT.url?kn=833965&vs=OTM5MDZiNDctZTAxNC00N2Q3LWE5ZDQtZjYyYTZmNjljYzU5OzsS1" xtlinkname="Resources_Link2" name="Resources_Link2" xt="SPCLICKSTREAM" class="Access" onclick="return ewt.trackLink({name:'TOFU-BL',type:'click',link:this});" style="color: #009EDF;">Literature &amp; Arts Resources Catalog (PDF)</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--*********************** End RESOURCES Area ************************-->
+
+</div>
+
+<!--***************************** Start Footer ******************************-->
+<div class="footer_one">
+  <div class="container">
+    <div class="col-md-12">
+      <div class="col-md-2 col-xs-6">
+        <div class="single_ft quicklinks">
+          <h4>Navigation</h4><!--Navigation-->
+          <a name="Footer_Navigation_Libraries" href="https://www.proquest.com/libraries">For Libraries</a><br>
+          <a name="Footer_Navigation_Researchers" href="https://www.proquest.com/researchers">For Researchers</a><br>
+          <a name="Footer_Navigation_ProductsServices" href="https://www.proquest.com/products-services">Products &amp; Services</a><br>
+          <a name="Footer_Navigation_Customers" href="https://www.proquest.com/customer-care">For Customers</a><br>
+          <a name="Footer_Navigation_Events" href="https://www.proquest.com/events">Events</a><br>
+          <a name="Footer_Navigation_About" href="https://www.proquest.com/about">About</a><br>
+          <a name="Footer_Navigation_Blogs" href="https://www.proquest.com/blog">Blogs</a>
+        </div>
+      </div>
+      <div class="col-md-2 col-xs-6">
+        <div class="single_ft quicklinks">
+          <h4>Support</h4><!--Support-->
+          <a name="Footer_Support_SupportCenter" href="https://www.proquest.com/company/support-landing.html">Support Center</a><br>
+          <a name="Footer_Support_ToolsResources" href="https://www.proquest.com/customer-care/tools-resources/">Tools and Resources</a><br>
+          <a name="Footer_Support_TrainingWebinars" href="https://www.proquest.com/customer-care/training-webinars/">Training Webinars</a><br>
+          <a name="Footer_Support_LibGuides" href="https://proquest.libguides.com/home">LibGuides</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /.footer_one -->
+
+<!-- For the "Cookie Preferences" footer link - served by trustarc.com --> 
+<script src="https://consent.trustarc.com/notice?domain=proquest.com&c=teconsent&js=nj&noticeType=bb&text=true" async="async" crossorigin=""></script>
+
+<div class="main_footer">
+  <div class="container links col-xs-12">
+    <div style="text-align: center;">
+      <a name="BottomNav_Privacy" href="https://www.proquest.com/about/privacy-statement.html">Privacy</a>
+      <a name="BottomNav_TermsofUse" href="https://www.proquest.com/about/terms-and-conditions.html">Terms of Use</a>
+      <a name="BottomNav_Cookies" href="https://www.proquest.com/about/cookie-policy.html">Cookies</a>
+      <div id="teconsent" style="display: inline;"></div>
+      <a name="BottomNav_Accessibility" href="https://www.proquest.com/company/ProQuest-ADA-Compliance.html">Accessibility</a>
+      <a name="BottomNav_DMCAPolicy" href="https://media2.proquest.com/documents/dmcapolicy.pdf">DMCA Policy</a>
+    </div>
+  </div>
+</div><!-- /.main_footer -->
+<!--****************************** End Footer *******************************-->
+
+</body>
+
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '662016790538712');
+fbq('track', 'ViewContent');
+</script>
+<noscript>
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=662016790538712&ev=PageView&noscript=1"
+/>
+</noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code -->
+
+<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PKTQGK');
+</script>
+<!-- End Google Tag Manager -->
+</html>
