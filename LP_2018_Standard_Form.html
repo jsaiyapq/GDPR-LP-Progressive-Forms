@@ -666,9 +666,12 @@ function clearIdentity() {
                 </div>
               </div>
             </div>
-            
+
             <!-- The "Lead Status" can be updated by changing the value="" -->
-            <input type="hidden" name="Lead Status" value="Open-Marketing Visitor">
+            <input type="hidden" name="Lead Status" value="Sales Ready">
+
+            <!-- only set "Sales Ready Type" if "Lead Status" is set to "Sales Ready" -->
+            <input type="hidden" name="Sales Ready Type" value="Direct Inquiries" />
 
             <!-- The "Last Touch Lead Source" can be updated by changing the value="" -->
             <input type="hidden" name="LastTouchLeadSource" id="LastTouchLeadSource" value="Targeted Email">

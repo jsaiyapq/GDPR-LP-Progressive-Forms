@@ -736,9 +736,12 @@ function displayProgressiveForm() {
                 </div>
               </div>
             </div>
-            
+
             <!-- The "Lead Status" can be updated by changing the value="" -->
-            <input type="hidden" name="Lead Status" value="Open-Marketing Visitor">
+            <input type="hidden" name="Lead Status" value="Sales Ready">
+
+            <!-- only set "Sales Ready Type" if "Lead Status" is set to "Sales Ready" -->
+            <input type="hidden" name="Sales Ready Type" value="Direct Inquiries" />
 
             <!-- The "Last Touch Lead Source" can be updated by changing the value="" -->
             <input type="hidden" name="LastTouchLeadSource" id="LastTouchLeadSource" value="Targeted Email">
@@ -775,7 +778,7 @@ function displayProgressiveForm() {
   <div class="benefit_part">
     <div class="container">
       <div class="col-md-12">
-        <div class="b_title">
+        <div class="left_overview">
           <h3>Benefits</h3>
           <p style="font-size: 18px;">If you need to add additional lines of benefits/highlights, look for the area labeled <span style="color: red;">"Start BENEFITS Row-2 Area"</span>.  You will want to copy and paste from this comment <strong>THROUGH THE END OF</strong> <span style="color: red;">"End BENEFITS Row-2 Area"</span>, and simply delete any extra content.  To delete the unnecessary content, you will highlight and delete the code for each section within its div tags.<br>
             <br>
@@ -840,7 +843,7 @@ function displayProgressiveForm() {
   <div class="resource_part">
     <div class="container">
       <div class="col-md-12">
-        <div class="b_title">
+        <div class="left_overview">
           <h3>Resources</h3>
           <p style="font-size: 18px;">If you need to add additional lines of resources/highlights, look for the area labeled <span style="color: red;">"Row-1"</span>.  You will want to copy and paste from this comment <strong>THROUGH THE END OF</strong> <span style="color: red;">"End RESOURCES Area"</span>, and simply delete any extra content.  To delete the unnecessary content, you will highlight and delete the code as shown in the below image for that section.<br>
             <br>
